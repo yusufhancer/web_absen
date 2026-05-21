@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Absensi Harian - SIHADIR</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="attendance-page" aria-label="Form absensi harian SIHADIR">
+      <header class="settings-topbar attendance-topbar">
+        <a href="dashboard.html" aria-label="Kembali ke dashboard">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M19 12H5" />
+            <path d="m12 19-7-7 7-7" />
+          </svg>
+        </a>
+        <h1>SIHADIR</h1>
+      </header>
+
+      <section class="attendance-title-card">
+        <h2>Absensi Harian</h2>
+        <p>Senin, 24 Oktober 2026</p>
+      </section>
+
+      <form class="attendance-form-card" action="konfirmasi.html">
+        <div class="student-info-card">
+          <div>
+            <span>NAMA</span>
+            <strong>Tania Cahyono</strong>
+          </div>
+          <div>
+            <span>KELAS</span>
+            <strong>X PPLG 2</strong>
+          </div>
+        </div>
+
+        <fieldset class="attendance-status">
+          <legend>Status Kehadiran</legend>
+          <div>
+            <label>
+              <input type="radio" name="status" value="hadir" checked />
+              <span>Hadir</span>
+            </label>
+            <label>
+              <input type="radio" name="status" value="sakit" />
+              <span>Sakit</span>
+            </label>
+            <label>
+              <input type="radio" name="status" value="izin" />
+              <span>Izin</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <label class="attendance-field">
+          <span>Nomor Absen</span>
+          <span class="attendance-control">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M7 2v4" />
+              <path d="M17 2v4" />
+              <path d="M4 8h16" />
+              <path d="M5 4h14v17H5z" />
+              <path d="M8 12h2" />
+              <path d="M12 12h2" />
+              <path d="M8 16h2" />
+              <path d="M12 16h2" />
+            </svg>
+            <input type="number" name="nomor_absen" placeholder="Contoh: 12" />
+          </span>
+        </label>
+
+        <label class="attendance-field note-field">
+          <span>
+            Kata Hari Ini
+            <em>Opsional</em>
+          </span>
+          <span class="attendance-control textarea-control">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 6h11" />
+              <path d="M4 10h7" />
+              <path d="M4 14h5" />
+              <path d="m14 15 2 2 4-5" />
+            </svg>
+            <textarea name="catatan" maxlength="100" placeholder="Tuliskan sesuatu yang memotivasi..."></textarea>
+          </span>
+          <small>0/100 karakter</small>
+        </label>
+
+        <button class="send-attendance-button" type="submit">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m4 5 16 7-16 7 4-7-4-7Z" />
+          </svg>
+          <span>Kirim Absensi</span>
+        </button>
+      </form>
+    </main>
+  </body>
+</html>

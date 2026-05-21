@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIHADIR - Rekap Bulanan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h1>SIHADIR</h1>
+        <p class="sidebar-subtitle">Academic System</p>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="dashboard-guru.html" class="nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          Home
+        </a>
+        <a href="leaderboard-guru.html" class="nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="14" width="4" height="6"></rect><rect x="10" y="4" width="4" height="16"></rect><rect x="17" y="10" width="4" height="10"></rect></svg>
+          Leaderboard
+        </a>
+        <a href="profile-guru.html" class="nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          Profile
+        </a>
+        <a href="permintaan-review-guru.html" class="nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          Permintaan Review
+        </a>
+        <a href="rekap-bulanan-guru.html" class="nav-item active-orange">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+          Laporan
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-profile" style="cursor: pointer;" onclick="window.location.href='profile-guru.html'">
+          <img src="guru-avatar.png" alt="Bu Kalim Sulistyo" class="avatar-small">
+          <div class="user-info">
+            <span class="user-name">Bu Kalim Sulistyo</span>
+            <span class="user-class">X PPLG 2</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content rekap-main">
+      <header class="top-header">
+        <div class="header-titles" style="display: flex; align-items: center; gap: 12px;">
+          <a href="dashboard-guru.html" class="back-arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          </a>
+          <h2>Dashboard Utama</h2>
+        </div>
+        <div class="header-actions">
+          <button class="icon-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+          </button>
+          <img src="guru-avatar.png" alt="Bu Kalim Sulistyo" class="header-avatar">
+        </div>
+      </header>
+
+      <!-- Rekap Bulanan Section -->
+      <section class="rekap-section">
+        <h2 class="rekap-title">Rekapan Bulanan</h2>
+        <p class="rekap-subtitle">Yearly summary overview for academic records.</p>
+
+        <!-- Year Selector -->
+        <div class="year-selector">
+          <div class="year-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            2025/2026
+          </div>
+          <div class="year-dropdown">
+            <select>
+              <option>Select Academic Year</option>
+              <option>2023/2024</option>
+              <option selected>2024/2025</option>
+              <option>2025/2026</option>
+            </select>
+            <svg class="dropdown-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </div>
+        </div>
+
+        <!-- Month Grid -->
+        <div class="rekap-bg-card">
+          <div class="month-grid">
+            <a href="detail-kehadiran-guru.html" class="month-card">
+              <span class="month-number">01</span>
+              <span class="month-name">Januari</span>
+            </a>
+            <a href="detail-kehadiran-guru.html" class="month-card">
+              <span class="month-number">02</span>
+              <span class="month-name">Februari</span>
+            </a>
+            <a href="detail-kehadiran-guru.html" class="month-card">
+              <span class="month-number">03</span>
+              <span class="month-name">Maret</span>
+            </a>
+            <a href="detail-kehadiran-guru.html" class="month-card">
+              <span class="month-number">04</span>
+              <span class="month-name">April</span>
+            </a>
+            <a href="detail-kehadiran-guru.html" class="month-card">
+              <span class="month-number">05</span>
+              <span class="month-name">Mei</span>
+            </a>
+            <a href="detail-kehadiran-guru.html" class="month-card">
+              <span class="month-number">06</span>
+              <span class="month-name">Juni</span>
+            </a>
+            <a href="detail-kehadiran-guru.html" class="month-card">
+              <span class="month-number">07</span>
+              <span class="month-name">Juli</span>
+            </a>
+            <a href="detail-kehadiran-guru.html" class="month-card">
+              <span class="month-number">08</span>
+              <span class="month-name">Agustus</span>
+            </a>
+            <a href="detail-kehadiran-guru.html" class="month-card">
+              <span class="month-number">09</span>
+              <span class="month-name">September</span>
+            </a>
+            <a href="detail-kehadiran-guru.html" class="month-card">
+              <span class="month-number">10</span>
+              <span class="month-name">Oktober</span>
+            </a>
+            <a href="detail-kehadiran-guru.html" class="month-card">
+              <span class="month-number">11</span>
+              <span class="month-name">November</span>
+            </a>
+            <a href="detail-kehadiran-guru.html" class="month-card">
+              <span class="month-number">12</span>
+              <span class="month-name">Desember</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Help FAB -->
+      <button class="fab-help">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+      </button>
+    </main>
+  </div>
+</body>
+</html>

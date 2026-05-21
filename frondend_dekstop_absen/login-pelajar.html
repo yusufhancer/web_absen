@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIHADIR - Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container container-reverse">
+    <div class="illustration-panel">
+      <img src="./assets/desk_illustration.png" alt="Ilustrasi Meja Belajar Estetik" class="illustration">
+    </div>
+    
+    <div class="form-panel login-panel">
+      <div class="login-wrapper">
+        <p class="welcome-text">Welcome back. Please enter your details.</p>
+        
+        <div class="form-card">
+          <form class="register-form">
+            <div class="input-group">
+              <label for="nis">NIS (Student ID)</label>
+              <div class="input-wrapper">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                <input type="text" id="nis" placeholder="Enter your NIS">
+              </div>
+            </div>
+            
+            <div class="input-group">
+              <label for="password">Password</label>
+              <div class="input-wrapper">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                <input type="password" id="password" placeholder="Enter your password">
+              </div>
+            </div>
+            
+            <div class="class-chips">
+              <label class="chip">
+                <input type="radio" name="class" value="X PPLG 1">
+                <span>X PPLG 1</span>
+              </label>
+              <label class="chip">
+                <input type="radio" name="class" value="X PPLG 2" checked>
+                <span>X PPLG 2</span>
+              </label>
+              <label class="chip">
+                <input type="radio" name="class" value="X PPLG 3">
+                <span>X PPLG 3</span>
+              </label>
+            </div>
+            
+            <button type="button" class="btn-register btn-login" onclick="window.location.href='dashboard.html'">
+              Masuk 
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </button>
+            
+            <div class="forgot-password">
+              <a href="#">Forgot Password?</a>
+            </div>
+          </form>
+        </div>
+        
+        <div class="login-link footer-link">
+          Don't have an account? <a href="register-pelajar.html">Register here</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

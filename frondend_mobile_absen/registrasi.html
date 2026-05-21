@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Daftar Pelajar - SIHADIR</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="registration-shell" aria-label="Registrasi akun pelajar SIHADIR">
+      <img
+        class="registration-hero"
+        src="assets/registration-hero.png"
+        alt="Ilustrasi meja belajar dengan kopi dan buku"
+      />
+
+      <section class="registration-panel">
+        <header class="registration-header">
+          <h1>Buat Akun</h1>
+          <p>Daftarkan diri Anda untuk mengakses SIHADIR.</p>
+        </header>
+
+        <form class="registration-form" action="login.html">
+          <label class="field">
+            <span>NIS</span>
+            <span class="control">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M8 3h8v4H8z" />
+                <path d="M6 7h12v14H6z" />
+                <path d="M9 12h2" />
+                <path d="M13 12h2" />
+                <path d="M9 16h6" />
+                <path d="M4 11h2" />
+                <path d="M18 11h2" />
+              </svg>
+              <input type="text" name="nis" placeholder="Masukkan Nomor Induk Siswa" />
+            </span>
+          </label>
+
+          <label class="field">
+            <span>NAMA LENGKAP</span>
+            <span class="control">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M8.5 8.5a3.5 3.5 0 1 0 7 0 3.5 3.5 0 0 0-7 0Z" />
+                <path d="M5 20a7 7 0 0 1 14 0" />
+              </svg>
+              <input type="text" name="nama" placeholder="Masukkan Nama Lengkap" />
+            </span>
+          </label>
+
+          <label class="field">
+            <span>KELAS</span>
+            <span class="control select-control">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m3 8.5 9-5 9 5-9 5-9-5Z" />
+                <path d="M7 11v4.5l5 2.8 5-2.8V11" />
+              </svg>
+              <select name="kelas">
+                <option value="">Pilih Kelas</option>
+                <option value="10">X PPLG 1</option>
+                <option value="11">X PPLG 2</option>
+                <option value="12">X PPLG 3</option>
+              </select>
+              <svg class="select-arrow" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </span>
+          </label>
+
+          <label class="field">
+            <span>KATA SANDI</span>
+            <span class="control">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M7 10V8a5 5 0 0 1 10 0v2" />
+                <path d="M5 10h14v11H5z" />
+                <path d="M12 15v2" />
+              </svg>
+              <input type="password" name="password" placeholder="Buat Kata Sandi" />
+              <svg class="eye-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m3 3 18 18" />
+                <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8" />
+                <path d="M9.3 5.4A9.4 9.4 0 0 1 12 5c5 0 8.5 4.3 9.7 6a15.6 15.6 0 0 1-3.1 3.7" />
+                <path d="M6.4 6.5A15.3 15.3 0 0 0 2.3 11c1.2 1.7 4.7 6 9.7 6 1.1 0 2.1-.2 3-.6" />
+              </svg>
+            </span>
+          </label>
+
+          <button class="register-button" type="submit">
+            <span>Daftar Sekarang</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M5 12h14" />
+              <path d="m13 6 6 6-6 6" />
+            </svg>
+          </button>
+        </form>
+
+        <p class="login-link">Sudah punya akun? <a href="login.html">Masuk di sini</a></p>
+      </section>
+    </main>
+  </body>
+</html>
