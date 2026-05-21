@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Detail Mingguan - SIHADIR</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="weekly-page" aria-label="Detail rekap mingguan SIHADIR">
+      <header class="weekly-topbar">
+        <a href="rekap-bulanan.html" aria-label="Kembali ke rekap bulanan">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M19 12H5" />
+            <path d="m12 19-7-7 7-7" />
+          </svg>
+        </a>
+        <h1>Detail Mingguan</h1>
+      </header>
+
+      <label class="weekly-search">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m21 21-4.3-4.3" />
+          <path d="M10.8 18a7.2 7.2 0 1 0 0-14.4 7.2 7.2 0 0 0 0 14.4Z" />
+        </svg>
+        <input type="search" placeholder="Cari nama atau NIS..." />
+      </label>
+
+      <div class="weekly-filters" aria-label="Filter rekap mingguan">
+        <button class="active" type="button">XI RPL 1</button>
+        <button type="button">Mei 2024</button>
+        <button type="button">Semua Status</button>
+      </div>
+
+      <div class="weekly-legend" aria-label="Keterangan status">
+        <span class="status-chip hadir">✓</span> Hadir
+        <span class="status-chip izin">o</span> Izin
+        <span class="status-chip sakit">+</span> Sakit
+        <span class="status-chip alpha">×</span> Alpha
+      </div>
+
+      <section class="weekly-table-card" aria-label="Tabel detail mingguan">
+        <div class="weekly-table-scroll">
+          <table class="weekly-table">
+            <thead>
+              <tr>
+                <th rowspan="2" class="student-column">Siswa</th>
+                <th colspan="5">Minggu 1</th>
+                <th colspan="5">Minggu 2</th>
+                <th colspan="5">Minggu 3</th>
+                <th colspan="5">Minggu 4</th>
+              </tr>
+              <tr>
+                <th>Sen</th><th>Sel</th><th>Rab</th><th>Kam</th><th>Jum</th>
+                <th>Sen</th><th>Sel</th><th>Rab</th><th>Kam</th><th>Jum</th>
+                <th>Sen</th><th>Sel</th><th>Rab</th><th>Kam</th><th>Jum</th>
+                <th>Sen</th><th>Sel</th><th>Rab</th><th>Kam</th><th>Jum</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><th><strong>Aditya Ardiansyah</strong><small>120971</small></th><td class="alpha">×</td><td class="izin">o</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="alpha">×</td><td class="hadir">✓</td><td class="sakit">+</td><td class="izin">o</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="sakit">+</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="izin">o</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="sakit">+</td><td class="hadir">✓</td></tr>
+              <tr><th><strong>Budi Santoso</strong><small>120972</small></th><td class="hadir">✓</td><td class="izin">o</td><td class="izin">o</td><td class="alpha">×</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="izin">o</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="sakit">+</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="izin">o</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="alpha">×</td><td class="hadir">✓</td><td class="hadir">✓</td></tr>
+              <tr><th><strong>Citra Lestari</strong><small>120973</small></th><td class="sakit">+</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="izin">o</td><td class="sakit">+</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="izin">o</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="alpha">×</td><td class="hadir">✓</td><td class="izin">o</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td></tr>
+              <tr><th><strong>Deni Pratama</strong><small>120974</small></th><td class="alpha">×</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="alpha">×</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="alpha">×</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="izin">o</td><td class="hadir">✓</td><td class="sakit">+</td></tr>
+              <tr><th><strong>Eka Wijaya</strong><small>120935</small></th><td class="hadir">✓</td><td class="izin">o</td><td class="sakit">+</td><td class="hadir">✓</td><td class="sakit">+</td><td class="izin">o</td><td class="hadir">✓</td><td class="sakit">+</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="sakit">+</td><td class="hadir">✓</td><td class="alpha">×</td><td class="hadir">✓</td><td class="izin">o</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="izin">o</td><td class="hadir">✓</td></tr>
+              <tr><th><strong>Farah Nabila</strong><small>120936</small></th><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="sakit">+</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="izin">o</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="alpha">×</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td></tr>
+              <tr><th><strong>Gilang Ramadhan</strong><small>120947</small></th><td class="hadir">✓</td><td class="sakit">+</td><td class="sakit">+</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="sakit">+</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="izin">o</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="sakit">+</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="alpha">×</td><td class="hadir">✓</td></tr>
+              <tr><th><strong>Hana Safira</strong><small>120948</small></th><td class="alpha">×</td><td class="hadir">✓</td><td class="sakit">+</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="alpha">×</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="sakit">+</td><td class="alpha">×</td><td class="hadir">✓</td><td class="izin">o</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="alpha">×</td><td class="hadir">✓</td></tr>
+              <tr><th><strong>Indra Kusuma</strong><small>120949</small></th><td class="hadir">✓</td><td class="alpha">×</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="alpha">×</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="alpha">×</td><td class="hadir">✓</td><td class="izin">o</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="sakit">+</td></tr>
+              <tr><th><strong>Juli Putri</strong><small>120950</small></th><td class="hadir">✓</td><td class="alpha">×</td><td class="alpha">×</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="sakit">+</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="alpha">×</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="hadir">✓</td><td class="alpha">×</td><td class="hadir">✓</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <footer class="weekly-table-footer">
+          <span>Menampilkan 15 dari 32 siswa</span>
+          <div>
+            <button type="button" aria-label="Halaman sebelumnya">‹</button>
+            <button type="button" aria-label="Halaman berikutnya">›</button>
+          </div>
+        </footer>
+      </section>
+
+      <a class="export-pdf-button" href="#">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6 2h9l5 5v15H6z" />
+          <path d="M15 2v5h5" />
+          <path d="M8 14h2.2a1.7 1.7 0 0 0 0-3.4H8v6.8" />
+          <path d="M13 10.6v6.8" />
+          <path d="M13 10.6h1.8a2.2 2.2 0 0 1 0 4.4H13" />
+        </svg>
+        Ekspor PDF
+      </a>
+    </main>
+  </body>
+</html>

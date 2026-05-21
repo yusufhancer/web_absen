@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIHADIR - Form Absensi Ketua</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container container-reverse absen-layout">
+    <div class="illustration-panel framed-illustration">
+      <img src="./assets/desk_illustration.png" alt="Ilustrasi Meja Belajar Estetik" class="illustration">
+    </div>
+    
+    <div class="form-panel absen-panel">
+      <div class="absen-wrapper">
+        <div class="absen-header">
+          <h2>Sihadir Absensi</h2>
+          <div class="date-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            Senin, 22 Oktober 2026
+          </div>
+        </div>
+        
+        <div class="form-card">
+          <form class="absen-form">
+            
+            <div class="user-info-box">
+              <div class="info-block">
+                <span class="info-label">NAMA LENGKAP</span>
+                <span class="info-value">Tania Cahyono</span>
+              </div>
+              <div class="info-block">
+                <span class="info-label">KELAS</span>
+                <span class="info-value">X PPLG 2</span>
+              </div>
+            </div>
+            
+            <div class="input-group">
+              <label>Status Kehadiran <span class="text-danger">*</span></label>
+              <div class="status-options">
+                <label class="status-card-opt">
+                  <input type="radio" name="status" value="Hadir" checked>
+                  <div class="status-content">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    <span>Hadir</span>
+                  </div>
+                </label>
+                
+                <label class="status-card-opt">
+                  <input type="radio" name="status" value="Sakit">
+                  <div class="status-content">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                    <span>Sakit</span>
+                  </div>
+                </label>
+                
+                <label class="status-card-opt">
+                  <input type="radio" name="status" value="Izin">
+                  <div class="status-content">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <span>Izin</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+            
+            <div class="input-group">
+              <div class="input-wrapper input-icon-right">
+                <input type="text" id="nomor_absen" placeholder="Nomor Absen *" required>
+                <svg class="icon-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2" ry="2"></rect><path d="M7 10v4"></path><path d="M12 10v4"></path><path d="M17 10v4"></path></svg>
+              </div>
+            </div>
+            
+            <div class="input-group">
+              <div class="textarea-wrapper">
+                <textarea id="kata_hari_ini" placeholder="Kata Hari Ini (Opsional)" rows="3"></textarea>
+                <div class="char-count">0/100</div>
+              </div>
+            </div>
+            
+            <button type="button" class="btn-register btn-submit-absen" onclick="window.location.href='konfirmasi-ketua.html'">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+              Kirim Absensi
+            </button>
+            
+          </form>
+        </div>
+        
+        <div class="footer-link">
+          Butuh bantuan? <a href="#">Hubungi Admin</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

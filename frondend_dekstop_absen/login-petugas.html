@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIHADIR - Login Petugas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container container-reverse login-petugas-bg">
+    <div class="illustration-panel">
+      <img src="./assets/desk_illustration.png" alt="Ilustrasi Meja Belajar Estetik" class="illustration">
+    </div>
+    
+    <div class="form-panel flex-center">
+      <div class="form-wrapper">
+        <p class="subtitle text-center petugas-subtitle">Welcome back. Please enter your details.</p>
+        
+        <div class="form-card petugas-card">
+          <form class="petugas-form">
+            <div class="input-group">
+              <label for="nis">NIS (Student ID)</label>
+              <div class="input-wrapper">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                <input type="text" id="nis" name="nis" placeholder="Enter your NIS" required>
+              </div>
+            </div>
+            
+            <br>
+
+            <div class="input-group">
+              <label for="password">Password</label>
+              <div class="input-wrapper">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+              </div>
+            </div>
+
+            <!-- Class Selection Chips -->
+            <div class="chip-group-wrapper">
+              <div class="chip-group">
+                <label class="chip-option">
+                  <input type="radio" name="class" value="X PPLG 1">
+                  <span class="chip-label">X PPLG 1</span>
+                </label>
+                <label class="chip-option">
+                  <input type="radio" name="class" value="X PPLG 2" checked>
+                  <span class="chip-label">X PPLG 2</span>
+                </label>
+                <label class="chip-option">
+                  <input type="radio" name="class" value="X PPLG 3">
+                  <span class="chip-label">X PPLG 3</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Role Selection Chips -->
+            <div class="input-group role-group">
+              <label>MASUK SEBAGAI</label>
+              <div class="chip-group">
+                <label class="chip-option chip-role">
+                  <input type="radio" name="role" value="Guru">
+                  <span class="chip-label">Guru</span>
+                </label>
+                <label class="chip-option chip-role">
+                  <input type="radio" name="role" value="Ketua Kelas" checked>
+                  <span class="chip-label">Ketua Kelas</span>
+                </label>
+              </div>
+            </div>
+            
+            <button type="button" class="btn-register btn-brown" onclick="handleLoginPetugas()">
+              Masuk 
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </button>
+
+            <div class="forgot-pwd-wrapper">
+              <a href="#" class="forgot-pwd-link">Forgot Password?</a>
+            </div>
+          </form>
+        </div>
+        
+        <p class="login-prompt" style="text-align: center; margin-top: 32px; font-size: 0.9rem; color: #736d65;">
+          Don't have an account? <a href="register-pelajar.html" class="login-link" style="color: #a15e1b; font-weight: 600; text-decoration: none;">Register here</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</body>
+<script>
+function handleLoginPetugas() {
+  const roleRadio = document.querySelector('input[name="role"]:checked');
+  if (roleRadio && roleRadio.value === 'Ketua Kelas') {
+    window.location.href = 'dashboard-ketua.html';
+  } else if (roleRadio && roleRadio.value === 'Guru') {
+    window.location.href = 'dashboard-guru.html';
+  } else {
+    window.location.href = 'dashboard.html';
+  }
+}
+</script>
+</html>

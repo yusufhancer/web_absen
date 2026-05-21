@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Guru - SIHADIR</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="chair-dashboard-shell" aria-label="Dashboard guru SIHADIR">
+      <header class="dashboard-topbar chair-topbar">
+        <h1>SIHADIR</h1>
+        <a class="dashboard-avatar-link" href="settings-guru.html" aria-label="Profil guru">
+          <img src="assets/dashboard-avatar.png" alt="Foto profil guru" />
+        </a>
+      </header>
+
+      <section class="chair-greeting">
+        <p>SENIN, 24 OKT 2023</p>
+        <h2>Selamat Pagi, Tania!</h2>
+        <span>Siap untuk belajar hari ini?</span>
+      </section>
+
+      <a class="attendance-hero chair-attendance teacher-recap-card" href="rekap-bulanan.html" aria-label="Buka rekap bulanan">
+        <h2>Rekapan<br />Bulanan</h2>
+      </a>
+
+      <section class="leaderboard-card chair-leaderboard-card" aria-labelledby="teacher-leaderboard-title">
+        <div class="leaderboard-header chair-leaderboard-header">
+          <h2 id="teacher-leaderboard-title">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M8 21h8" />
+              <path d="M12 17v4" />
+              <path d="M7 4h10v4a5 5 0 0 1-10 0V4Z" />
+              <path d="M5 5H3v2a4 4 0 0 0 4 4" />
+              <path d="M19 5h2v2a4 4 0 0 1-4 4" />
+            </svg>
+            <span>Daily<br />Leaderboard</span>
+          </h2>
+          <a href="leaderboard-guru.html">Lihat<br />Semua</a>
+        </div>
+
+        <ol class="leaderboard-list chair-leaderboard-list">
+          <li class="leaderboard-item">
+            <span class="rank rank-gold">1</span>
+            <span class="empty-avatar"></span>
+            <div>
+              <h3>Aida Dwi Riana P.</h3>
+              <p>06:15 WIB</p>
+            </div>
+          </li>
+          <li class="leaderboard-item">
+            <span class="rank">2</span>
+            <span class="avatar-letter avatar-red">A</span>
+            <div>
+              <h3>Alais Luthfi N. B.</h3>
+              <p>06:20 WIB</p>
+            </div>
+          </li>
+          <li class="leaderboard-item">
+            <span class="rank">3</span>
+            <span class="avatar-letter avatar-blue">D</span>
+            <div>
+              <h3>Alfian Dzaky</h3>
+              <p>06:25 WIB</p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <section class="history-section chair-history-section" aria-labelledby="teacher-history-title">
+        <h2 id="teacher-history-title">Riwayat Terkini</h2>
+        <div class="history-card">
+          <article class="history-item">
+            <span class="history-icon success">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M20 6 9 17l-5-5" />
+              </svg>
+            </span>
+            <div>
+              <h3>Hadir - Tepat Waktu</h3>
+              <p>Jumat, 21 Okt - 06:45 WIB</p>
+            </div>
+          </article>
+          <article class="history-item">
+            <span class="history-icon success">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M20 6 9 17l-5-5" />
+              </svg>
+            </span>
+            <div>
+              <h3>Hadir - Tepat Waktu</h3>
+              <p>Kamis, 20 Okt - 06:50 WIB</p>
+            </div>
+          </article>
+          <article class="history-item">
+            <span class="history-icon danger">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 7v6" />
+                <path d="M12 16h.01" />
+              </svg>
+            </span>
+            <div>
+              <h3>Terlambat</h3>
+              <p>Rabu, 19 Okt - 08:15 WIB</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="review-section" aria-labelledby="teacher-review-title">
+        <h2 id="teacher-review-title">Permintaan Review</h2>
+        <div class="review-list">
+          <a class="review-card" href="#">
+            <span>A</span>
+            <div>
+              <h3>Alfian Dzaky</h3>
+              <p>XI PPLG 1 • Menunggu Verifikasi</p>
+            </div>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m9 18 6-6-6-6" />
+            </svg>
+          </a>
+          <a class="review-card" href="#">
+            <span>A</span>
+            <div>
+              <h3>Alfian Dzaky</h3>
+              <p>XI PPLG 1 • Menunggu Verifikasi</p>
+            </div>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m9 18 6-6-6-6" />
+            </svg>
+          </a>
+        </div>
+        <a class="review-more" href="permintaan-guru.html">Lihat Selengkapnya</a>
+      </section>
+    </main>
+  </body>
+</html>

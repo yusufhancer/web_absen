@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login Pelajar - SIHADIR</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="registration-shell" aria-label="Halaman masuk pelajar SIHADIR">
+      <img
+        class="registration-hero"
+        src="assets/login-hero.png"
+        alt="Ilustrasi meja belajar dengan kopi dan buku"
+      />
+
+      <section class="registration-panel student-login-panel">
+        <header class="registration-header login-header">
+          <h1>Selamat Datang Kembali</h1>
+          <p>Silahkan masuk ka akun Anda</p>
+        </header>
+
+        <form class="registration-form student-login-form" action="dashboard.html">
+          <label class="field">
+            <span>NIS</span>
+            <span class="control">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M8 3h8v4H8z" />
+                <path d="M6 7h12v14H6z" />
+                <path d="M9 12h2" />
+                <path d="M13 12h2" />
+                <path d="M9 16h6" />
+                <path d="M4 11h2" />
+                <path d="M18 11h2" />
+              </svg>
+              <input type="text" name="nis" placeholder="Masukkan NIS Anda" />
+            </span>
+          </label>
+
+          <label class="field">
+            <span>KATA SANDI</span>
+            <span class="control">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M7 10V8a5 5 0 0 1 10 0v2" />
+                <path d="M5 10h14v11H5z" />
+                <path d="M12 15v2" />
+              </svg>
+              <input type="password" name="password" placeholder="Masukkan Kata Sandi" />
+              <svg class="eye-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M2.3 12s3.6-6 9.7-6 9.7 6 9.7 6-3.6 6-9.7 6-9.7-6-9.7-6Z" />
+                <path d="M9.5 12a2.5 2.5 0 1 0 5 0 2.5 2.5 0 0 0-5 0Z" />
+              </svg>
+            </span>
+          </label>
+
+          <div class="class-tabs" aria-label="Pilih kelas">
+            <label>
+              <input type="radio" name="kelas" value="x-pplg-1" />
+              <span>X PPLG 1</span>
+            </label>
+            <label>
+              <input type="radio" name="kelas" value="x-pplg-2" checked />
+              <span>X PPLG 2</span>
+            </label>
+            <label>
+              <input type="radio" name="kelas" value="x-pplg-3" />
+              <span>X PPLG 3</span>
+            </label>
+          </div>
+
+          <a class="forgot-link" href="#">Lupa Kata Sandi?</a>
+
+          <button class="register-button student-login-button" type="submit">
+            <span>Masuk</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M5 12h14" />
+              <path d="m13 6 6 6-6 6" />
+            </svg>
+          </button>
+        </form>
+
+        <p class="login-link student-register-link">
+          Belum punya akun? <a href="registrasi.html">Daftar di sini</a>
+        </p>
+      </section>
+    </main>
+  </body>
+</html>
