@@ -144,8 +144,11 @@ function historyMobile(item) {
 }
 
 async function loadLeaderboard() {
-  const data = await sihadirFetch("/leaderboard/today.php").catch(() => ({ items: [] }));
-  renderLeaderboard(data.items || [], isMobile() ? 3 : 8);
+  const isFullPage = Boolean(document.querySelector(".podium-card") && document.querySelector(".rankings-table tbody"));
+  const limit = isFullPage ? 10 : (isMobile() ? 3 : 8);
+  const data = await sihadirFetch(`/leaderboard/today.php?limit=${limit}`).catch(() => ({ items: [] }));
+  if (isFullPage) renderFullLeaderboard(data.items || []);
+  else renderLeaderboard(data.items || [], limit);
 }
 
 function renderLeaderboard(items, limit) {
@@ -156,19 +159,73 @@ function renderLeaderboard(items, limit) {
     container.innerHTML = isMobile() ? '<li class="leaderboard-item"><div><h3>Belum ada leaderboard</h3><p>Menunggu absen approved</p></div></li>' : '<div class="leaderboard-item"><div class="lb-details"><h4>Belum ada leaderboard</h4><span>Menunggu absen approved</span></div></div>';
     return;
   }
-  container.innerHTML = rows.map((item, index) => isMobile() ? leaderboardMobile(item, index) : leaderboardDesktop(item, index)).join("");
+  container.innerHTML = withStatusSeparators(rows, (item, index) => isMobile() ? leaderboardMobile(item, index) : leaderboardDesktop(item, index)).join("");
 }
 
-function leaderboardDesktop(item, index) {
-  const rankClass = index === 0 ? "rank rank-1" : "rank";
-  const color = ["bg-pink", "bg-blue", "bg-indigo", "bg-green", "bg-orange", "bg-purple", "bg-red"][index % 7];
-  return `<div class="leaderboard-item"><div class="${rankClass}">${index + 1}</div><div class="avatar-initial ${color}">${initial(item.name)}</div><div class="lb-details"><h4>${item.name}</h4><span>${formatTime(item.submitted_at)} WIB</span></div></div>`;
+function renderFullLeaderboard(items) {
+  const podium = document.querySelector(".podium-card");
+  const tbody = document.querySelector(".rankings-table tbody");
+  if (!podium || !tbody) return;
+
+  if (!items.length) {
+    podium.innerHTML = '<div class="podium-item podium-1"><h4>Belum ada leaderboard</h4><div class="lb-time">Menunggu absensi approved</div></div>';
+    tbody.innerHTML = '<tr><td colspan="4" class="class-col">Belum ada data absensi approved hari ini</td></tr>';
+    return;
+  }
+
+  podium.innerHTML = [items[1] ? podiumItem(items[1], 2) : "", items[0] ? podiumItem(items[0], 1) : "", items[2] ? podiumItem(items[2], 3) : ""].join("");
+  tbody.innerHTML = withStatusSeparators(items.slice(3), tableRow, true).join("") || '<tr><td colspan="4" class="class-col">Belum ada ranking tambahan</td></tr>';
 }
 
-function leaderboardMobile(item, index) {
-  const rankClass = index === 0 ? "rank rank-gold" : "rank";
-  const color = ["avatar-red", "avatar-blue", "avatar-purple"][index % 3];
-  return `<li class="leaderboard-item"><span class="${rankClass}">${index + 1}</span><span class="avatar-letter ${color}">${initial(item.name)}</span><div><h3>${item.name}</h3><p>${formatTime(item.submitted_at)} WIB</p></div></li>`;
+function podiumItem(item, place) {
+  const placeClass = { 1: "podium-1", 2: "podium-2", 3: "podium-3" }[place];
+  const badgeClass = { 1: "badge-gold", 2: "badge-silver", 3: "badge-bronze" }[place];
+  const pedestalClass = { 1: "pedestal-gold", 2: "pedestal-silver", 3: "pedestal-bronze" }[place];
+  const glow = place === 1 ? " glow-gold" : "";
+  const orange = place === 1 ? " text-orange" : "";
+  const star = place === 1 ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="star-icon"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>' : "";
+  return `<div class="podium-item ${placeClass}"><div class="avatar-wrapper${glow}"><img src="https://i.pravatar.cc/100?u=${encodeURIComponent(item.nis || item.name)}" alt="${escapeHtml(item.name)}"><div class="badge ${badgeClass}">${item.rank}</div></div><h4>${escapeHtml(shortName(item.name))}</h4><div class="lb-time${orange}">${clockIcon()} ${item.time_label || formatTime(item.submitted_at)} ${statusBadge(item.status)}</div><div class="pedestal ${pedestalClass}">${star}</div></div>`;
+}
+
+function tableRow(item) {
+  const color = ["bg-orange-light text-orange", "bg-blue-light text-blue", "bg-grey-light text-grey"][item.rank % 3];
+  return `<tr><td class="rank-col">${item.rank}</td><td><div class="student-cell"><div class="avatar-initial ${color}">${initial(item.name)}</div><span>${escapeHtml(item.name)} ${statusBadge(item.status)}</span></div></td><td class="class-col">${escapeHtml(item.kelas)}</td><td class="time-col">${item.time_label || formatTime(item.submitted_at)}</td></tr>`;
+}
+
+function leaderboardDesktop(item) {
+  const rankClass = item.rank === 1 ? "rank rank-1" : "rank";
+  const color = ["bg-pink", "bg-blue", "bg-indigo", "bg-green", "bg-orange", "bg-purple", "bg-red"][item.rank % 7];
+  return `<div class="leaderboard-item"><div class="${rankClass}">${item.rank}</div><div class="avatar-initial ${color}">${initial(item.name)}</div><div class="lb-details"><h4>${escapeHtml(item.name)}</h4><span>${item.time_label || formatTime(item.submitted_at)} WIB ${statusBadge(item.status)}</span></div></div>`;
+}
+
+function leaderboardMobile(item) {
+  const rankClass = item.rank === 1 ? "rank rank-gold" : "rank";
+  const color = ["avatar-red", "avatar-blue", "avatar-purple"][item.rank % 3];
+  return `<li class="leaderboard-item"><span class="${rankClass}">${item.rank}</span><span class="avatar-letter ${color}">${initial(item.name)}</span><div><h3>${escapeHtml(item.name)}</h3><p>${item.time_label || formatTime(item.submitted_at)} WIB ${statusBadge(item.status)}</p></div></li>`;
+}
+
+function withStatusSeparators(items, renderer, table = false) {
+  let lastGroup = "";
+  return items.flatMap((item, index) => {
+    const group = item.status === "hadir" ? "HADIR" : "SAKIT / IZIN";
+    const separator = group !== lastGroup ? statusSeparator(group, table) : "";
+    lastGroup = group;
+    return [separator, renderer(item, index)].filter(Boolean);
+  });
+}
+
+function statusSeparator(label, table = false) {
+  if (table) return `<tr><td colspan="4" class="class-col" style="font-weight:700;color:#a15e1b;background:#fff7ed;">${label}</td></tr>`;
+  return `<div style="font-weight:700;color:#a15e1b;font-size:12px;margin:10px 0 6px;">${label}</div>`;
+}
+
+function statusBadge(status) {
+  if (status === "hadir") return "";
+  return `<small style="font-weight:700;color:#a15e1b;">${title(status)}</small>`;
+}
+
+function clockIcon() {
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>';
 }
 
 function startClock() {
@@ -208,7 +265,16 @@ function initial(name) {
   return String(name || "?").trim().charAt(0).toUpperCase() || "?";
 }
 
+function shortName(name) {
+  return String(name || "").trim().split(/\s+/)[0] || "-";
+}
+
+function escapeHtml(value) {
+  return String(value || "").replace(/[&<>'"]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#039;", '"': "&quot;" }[char] || char));
+}
+
 function isMobile() {
   return location.pathname.includes("frondend_mobile_absen");
 }
+
 
