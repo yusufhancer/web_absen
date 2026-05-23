@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rekapan Bulanan - SIHADIR</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="recap-page" aria-label="Rekapan bulanan guru SIHADIR">
+      <header class="settings-topbar recap-topbar">
+        <a href="dashboard-guru.html" aria-label="Kembali ke dashboard guru">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M19 12H5" />
+            <path d="m12 19-7-7 7-7" />
+          </svg>
+        </a>
+        <h1>SIHADIR</h1>
+      </header>
+
+      <section class="recap-heading">
+        <h2>Rekapan Bulanan</h2>
+        <p>Yearly summary overview for academic records.</p>
+      </section>
+
+      <div class="academic-year-control" aria-label="Filter tahun akademik">
+        <button type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M7 2v4" />
+            <path d="M17 2v4" />
+            <path d="M4 8h16" />
+            <path d="M5 4h14v17H5z" />
+          </svg>
+          2023 / 2024
+        </button>
+        <button type="button">Select Academic Year</button>
+      </div>
+
+      <section class="month-list" aria-label="Daftar bulan rekap">
+        <a href="rekap-mingguan.html"><span>01</span><strong>Januari</strong><em>Lihat Detail</em></a>
+        <a href="#"><span>02</span><strong>Februari</strong><em>Lihat Detail</em></a>
+        <a href="#"><span>03</span><strong>Maret</strong><em>Lihat Detail</em></a>
+        <a href="#"><span>04</span><strong>April</strong><em>Lihat Detail</em></a>
+        <a href="#"><span>05</span><strong>Mei</strong><em>Lihat Detail</em></a>
+        <a href="#"><span>06</span><strong>Juni</strong><em>Lihat Detail</em></a>
+        <a href="#"><span>07</span><strong>Juli</strong><em>Lihat Detail</em></a>
+        <a href="#"><span>08</span><strong>Agustus</strong><em>Lihat Detail</em></a>
+        <a href="#"><span>09</span><strong>September</strong><em>Lihat Detail</em></a>
+        <a href="#"><span>10</span><strong>Oktober</strong><em>Lihat Detail</em></a>
+        <a href="#"><span>11</span><strong>November</strong><em>Lihat Detail</em></a>
+        <a href="#"><span>12</span><strong>Desember</strong><em>Lihat Detail</em></a>
+      </section>
+    </main>
+  <script src="assets/js/api.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/attendance.js"></script>
+<script src="assets/js/dashboard.js"></script>
+<script src="assets/js/review.js"></script>
+</body>
+</html>
+

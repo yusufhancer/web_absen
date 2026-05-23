@@ -12,8 +12,11 @@
     />
     <link rel="stylesheet" href="styles.css" />
   </head>
-  <body>
-    <main class="registration-shell" aria-label="Halaman masuk pelajar SIHADIR">
+  <body><main class="registration-shell" aria-label="Halaman masuk pelajar SIHADIR">
+  <a class="back-button" href="index.html" aria-label="Kembali ke halaman utama">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+    <span>Kembali</span>
+  </a>
       <img
         class="registration-hero"
         src="assets/login-hero.png"
@@ -26,7 +29,7 @@
           <p>Silahkan masuk ka akun Anda</p>
         </header>
 
-        <form class="registration-form student-login-form" action="dashboard.html">
+        <form class="registration-form student-login-form">
           <label class="field">
             <span>NIS</span>
             <span class="control">
@@ -57,24 +60,7 @@
                 <path d="M9.5 12a2.5 2.5 0 1 0 5 0 2.5 2.5 0 0 0-5 0Z" />
               </svg>
             </span>
-          </label>
-
-          <div class="class-tabs" aria-label="Pilih kelas">
-            <label>
-              <input type="radio" name="kelas" value="x-pplg-1" />
-              <span>X PPLG 1</span>
-            </label>
-            <label>
-              <input type="radio" name="kelas" value="x-pplg-2" checked />
-              <span>X PPLG 2</span>
-            </label>
-            <label>
-              <input type="radio" name="kelas" value="x-pplg-3" />
-              <span>X PPLG 3</span>
-            </label>
-          </div>
-
-          <a class="forgot-link" href="#">Lupa Kata Sandi?</a>
+          </label><a class="forgot-link" href="#">Lupa Kata Sandi?</a>
 
           <button class="register-button student-login-button" type="submit">
             <span>Masuk</span>
@@ -90,5 +76,17 @@
         </p>
       </section>
     </main>
-  </body>
+  <script src="assets/js/api.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/attendance.js"></script>
+<script src="assets/js/dashboard.js"></script>
+<script src="assets/js/review.js"></script>
+</body>
 </html>
+
+
+
+
+
+
+

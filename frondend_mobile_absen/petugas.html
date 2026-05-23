@@ -12,8 +12,11 @@
     />
     <link rel="stylesheet" href="styles.css" />
   </head>
-  <body>
-    <main class="registration-shell" aria-label="Halaman masuk petugas SIHADIR">
+  <body><main class="registration-shell" aria-label="Halaman masuk petugas SIHADIR">
+  <a class="back-button" href="index.html" aria-label="Kembali ke halaman utama">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+    <span>Kembali</span>
+  </a>
       <img
         class="registration-hero"
         src="assets/petugas-hero.png"
@@ -26,7 +29,7 @@
           <p>Silahkan masuk ke akun Anda</p>
         </header>
 
-        <form class="registration-form officer-form" action="dashboard-ketua.html" id="officer-login-form">
+        <form class="registration-form officer-form" id="officer-login-form">
           <label class="field">
             <span>NIS</span>
             <span class="control">
@@ -100,12 +103,16 @@
         </form>
       </section>
     </main>
-    <script>
-      document.getElementById("officer-login-form").addEventListener("submit", function (event) {
-        event.preventDefault();
-        const role = new FormData(this).get("role");
-        window.location.href = role === "guru" ? "dashboard-guru.html" : "dashboard-ketua.html";
-      });
-    </script>
-  </body>
+    
+  <script src="assets/js/api.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/attendance.js"></script>
+<script src="assets/js/dashboard.js"></script>
+<script src="assets/js/review.js"></script>
+</body>
 </html>
+
+
+
+
+
