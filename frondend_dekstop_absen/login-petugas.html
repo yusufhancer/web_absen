@@ -16,10 +16,12 @@
     </div>
     
     <div class="form-panel flex-center">
+      <a class="back-button" href="index.html" aria-label="Kembali ke halaman utama">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+  <span>Kembali</span>
+</a>
       <div class="form-wrapper">
-        <p class="subtitle text-center petugas-subtitle">Welcome back. Please enter your details.</p>
-        
-        <div class="form-card petugas-card">
+        <p class="subtitle text-center petugas-subtitle">Welcome back. Please enter your details.</p><div class="form-card petugas-card">
           <form class="petugas-form">
             <div class="input-group">
               <label for="nis">NIS (Student ID)</label>
@@ -89,17 +91,15 @@
       </div>
     </div>
   </div>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/attendance.js"></script>
+<script src="assets/js/dashboard.js"></script>
+<script src="assets/js/review.js"></script>
 </body>
-<script>
-function handleLoginPetugas() {
-  const roleRadio = document.querySelector('input[name="role"]:checked');
-  if (roleRadio && roleRadio.value === 'Ketua Kelas') {
-    window.location.href = 'dashboard-ketua.html';
-  } else if (roleRadio && roleRadio.value === 'Guru') {
-    window.location.href = 'dashboard-guru.html';
-  } else {
-    window.location.href = 'dashboard.html';
-  }
-}
-</script>
+
 </html>
+
+
+
+

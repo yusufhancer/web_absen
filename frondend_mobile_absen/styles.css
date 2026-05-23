@@ -2538,3 +2538,49 @@ p {
     font-size: 16px;
   }
 }
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 18px 0 0 18px;
+  padding: 10px 14px;
+  border: 1px solid #ead9c7;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.78);
+  color: #8c5011;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 10px 28px rgba(113, 64, 14, 0.08);
+}
+
+.back-button svg {
+  width: 18px;
+  height: 18px;
+}
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  align-self: flex-start;
+  margin: 18px 0 14px 18px;
+  padding: 10px 14px;
+  border: 1px solid #ead9c7;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.88);
+  color: #8c5011;
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
+  box-shadow: 0 10px 28px rgba(113, 64, 14, 0.1);
+}
+
+.back-button svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+}

@@ -2649,3 +2649,74 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  margin-bottom: 18px;
+  padding: 10px 14px;
+  border: 1px solid #ead9c7;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  color: #8c5011;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 10px 28px rgba(113, 64, 14, 0.08);
+  transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.back-button:hover {
+  transform: translateX(-3px);
+  background: #fffaf4;
+  box-shadow: 0 14px 34px rgba(113, 64, 14, 0.12);
+}
+
+.back-button svg {
+  width: 18px;
+  height: 18px;
+}
+
+.form-panel {
+  position: relative;
+}
+
+.form-panel > .back-button {
+  position: absolute;
+  top: 34px;
+  left: 34px;
+  z-index: 20;
+}
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: fit-content;
+  padding: 10px 14px;
+  border: 1px solid #ead9c7;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.86);
+  color: #8c5011;
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
+  box-shadow: 0 10px 28px rgba(113, 64, 14, 0.1);
+  transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.back-button:hover {
+  transform: translateX(-3px);
+  background: #fffaf4;
+  box-shadow: 0 14px 34px rgba(113, 64, 14, 0.14);
+}
+
+.back-button svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+}
