@@ -657,6 +657,12 @@ p {
   line-height: 1.2;
 }
 
+.leaderboard-meta {
+  color: #7a675b;
+  font-size: 12px;
+  font-weight: 600;
+}
+
 .leaderboard-card {
   margin-top: 34px;
   padding: 18px 17px;
