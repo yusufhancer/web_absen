@@ -36,10 +36,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     setLoading(true);
     try {
-      await sihadirFetch("/attendances/create.php", {
+      const response = await sihadirFetch("/attendances/create.php", {
         method: "POST",
         body: JSON.stringify({ status, absen_number, notes }),
       });
+      sessionStorage.setItem("sihadir:last-attendance", JSON.stringify({
+        status,
+        notes,
+        submitted_at: response.attendance?.submitted_at || new Date().toISOString(),
+      }));
       location.href = location.pathname.includes("ketua") ? "konfirmasi-ketua.html" : "konfirmasi.html";
     } catch (error) {
       sihadirToast(error.message || "Absensi gagal dikirim");
@@ -81,4 +86,42 @@ document.addEventListener("DOMContentLoaded", () => {
     else submitButton.innerHTML = submitButton.dataset.originalHtml;
   }
 });
+
+document.addEventListener("DOMContentLoaded", async () => {
+  const page = location.pathname.split("/").pop() || "";
+  if (page !== "konfirmasi.html" && page !== "konfirmasi-ketua.html") return;
+
+  let attendance = null;
+  try {
+    attendance = JSON.parse(sessionStorage.getItem("sihadir:last-attendance") || "null");
+  } catch (error) {
+    attendance = null;
+  }
+
+  if (!attendance) {
+    const data = await sihadirFetch("/attendances/today.php").catch(() => ({ attendance: null }));
+    attendance = data.attendance;
+  }
+
+  renderConfirmation(attendance);
+});
+
+function renderConfirmation(attendance) {
+  if (!attendance) return;
+
+  const rows = document.querySelectorAll(".summary-row strong, .summary-row em");
+  const submittedAt = attendance.submitted_at ? new Date(String(attendance.submitted_at).replace(" ", "T")) : new Date();
+
+  if (rows[0]) rows[0].textContent = submittedAt.toLocaleDateString("id-ID", { weekday: "long", day: "2-digit", month: "short", year: "numeric" });
+  if (rows[1]) rows[1].textContent = titleAttendance(attendance.status);
+  if (rows[2]) rows[2].textContent = `${submittedAt.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", hour12: false }).replace(".", ":")} WIB`;
+
+  const quoteText = document.querySelector(".daily-note blockquote");
+  const note = String(attendance.notes || "").trim();
+  if (quoteText) quoteText.textContent = note ? `"${note}"` : "Belum ada kata hari ini.";
+}
+
+function titleAttendance(value) {
+  return String(value || "").charAt(0).toUpperCase() + String(value || "").slice(1);
+}
 

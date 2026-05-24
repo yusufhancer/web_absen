@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const page = location.pathname.split("/").pop() || "";
   const protectedPage = /^(dashboard|profile|leaderboard|permintaan|rekap|detail|absen|settings)/.test(page);
   if (!protectedPage) return;
+  sihadirSkeleton.page(page);
 
   let me;
   try {
@@ -19,6 +20,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   renderUser(me);
+  initDevClock();
 
   if (page === "dashboard-guru.html" || page === "dashboard-ketua.html") {
     startClock();
@@ -34,9 +36,57 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 });
 
+async function initDevClock() {
+  if (document.querySelector("[data-dev-clock]")) return;
+
+  let data;
+  try {
+    data = await sihadirFetch("/dev/time.php");
+  } catch (error) {
+    return;
+  }
+
+  const panel = document.createElement("div");
+  panel.dataset.devClock = "1";
+  panel.style.cssText = "position:fixed;left:12px;right:12px;bottom:12px;z-index:9999;background:#ffffff;border:1px solid #efe4d8;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);padding:8px;display:flex;gap:6px;align-items:center;font-family:inherit;";
+  panel.innerHTML = `
+    <input type="datetime-local" value="${devClockInputValue(data.datetime)}" style="min-width:0;flex:1;border:1px solid #efe4d8;border-radius:6px;padding:8px;font:inherit;font-size:12px;">
+    <button type="button" data-dev-set style="border:0;border-radius:6px;background:#8c5011;color:#fff;padding:8px 10px;font-weight:700;cursor:pointer;">Set</button>
+    <button type="button" data-dev-reset style="border:1px solid #efe4d8;border-radius:6px;background:#fff;color:#8c5011;padding:8px 10px;font-weight:700;cursor:pointer;">Reset</button>
+  `;
+  document.body.appendChild(panel);
+
+  const input = panel.querySelector("input");
+  panel.querySelector("[data-dev-set]")?.addEventListener("click", async () => {
+    if (!input.value) return sihadirToast("Datetime wajib diisi");
+    const response = await sihadirFetch("/dev/time.php", {
+      method: "POST",
+      body: JSON.stringify({ datetime: input.value }),
+    });
+    input.value = devClockInputValue(response.datetime);
+    window.dispatchEvent(new CustomEvent("sihadir:dev-time", { detail: { datetime: response.datetime } }));
+    refreshDashboardAfterDevTimeChange();
+    sihadirToast("Datetime demo aktif");
+  });
+
+  panel.querySelector("[data-dev-reset]")?.addEventListener("click", async () => {
+    await sihadirFetch("/dev/time.php", { method: "DELETE" });
+    input.value = "";
+    window.dispatchEvent(new CustomEvent("sihadir:dev-time", { detail: { datetime: null } }));
+    refreshDashboardAfterDevTimeChange();
+    sihadirToast("Datetime demo direset");
+  });
+}
+
+function devClockInputValue(value) {
+  if (!value) return "";
+  return String(value).replace(" ", "T").slice(0, 16);
+}
+
 function renderUser(me) {
   const className = me.class_name || "-";
   const roleLabel = roleTitle(me.role);
+  sihadirSkeleton.clearText();
 
   sihadirText(".user-name", me.name);
   sihadirText(".user-class", className);
@@ -56,6 +106,7 @@ function renderUser(me) {
 }
 
 function allowRolePage(page, role) {
+  if (/^(rekap|detail)/.test(page)) return ["guru", "ketua_kelas"].includes(role);
   if (!page.includes("profile")) return true;
   if (page === "profile-guru.html") return role === "guru";
   if (page === "profile-ketua.html") return role === "ketua_kelas";
@@ -112,33 +163,50 @@ function renderAdminReviewCards(items, page) {
   }
 
   container.innerHTML = items.slice(0, 3).map((item) => `<div class="review-card" data-href="${reviewUrl}"><div class="avatar-initial bg-peach">${initial(item.nama_pelajar)}</div><div class="review-details"><h4>${escapeHtml(item.nama_pelajar)}</h4><p>${escapeHtml(item.class_name || item.kelas || "Kelas")} • ${item.time_label || formatTime(item.submitted_at)} WIB • Menunggu Verifikasi</p></div><svg class="icon-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>`).join("");
-
-  container.querySelectorAll(".review-card[data-href]").forEach((card) => {
-    card.style.cursor = "pointer";
-    card.addEventListener("click", () => { window.location.href = card.dataset.href; });
-  });
+  container.onclick = (event) => {
+    const card = event.target.closest(".review-card[data-href]");
+    if (card) window.location.href = card.dataset.href;
+  };
 }
 
 function approvalText(status) {
   return { pending: "Menunggu Review", approved: "Disetujui", rejected: "Ditolak" }[status] || status;
 }
 async function loadTodayStatus() {
-  const data = await sihadirFetch("/attendances/today.php").catch(() => ({ attendance: null }));
-  renderTodayStatus(data.attendance || null);
+  const [data, config] = await Promise.all([
+    sihadirFetch("/attendances/today.php").catch(() => ({ attendance: null })),
+    loadAppConfig(),
+  ]);
+  renderTodayStatus(data.attendance || null, config);
 }
 
-function renderTodayStatus(attendance) {
+async function loadAppConfig() {
+  return sihadirFetch("/config/app.php").catch(() => ({
+    attendance_limit_time: "08:00",
+    attendance_closed: false,
+  }));
+}
+
+function renderTodayStatus(attendance, config = {}) {
   const desktopBadge = document.querySelector(".badge-warning, .badge-success, .badge-danger");
   const mobileBadge = document.querySelector(".status-card span");
   const timeLimit = document.querySelector(".time-limit, .status-card p");
   const infoIcon = document.querySelector(".status-label .info-icon");
   const absenButton = document.querySelector(".btn-outline-white, .attendance-hero");
+  const limitTime = String(config.attendance_limit_time || "08:00").slice(0, 5);
 
   let label = "Belum Absen";
-  let detail = "Batas waktu: 08:00 WIB";
+  let detail = `Batas waktu: ${limitTime} WIB`;
   let className = "badge-warning";
   let iconClass = "info-icon info-warning";
-  let locked = false;
+  let locked = Boolean(config.attendance_closed);
+
+  if (locked) {
+    label = "Presensi Ditutup";
+    detail = `Presensi ditutup pukul ${limitTime} WIB`;
+    className = "badge-danger";
+    iconClass = "info-icon info-danger";
+  }
 
   if (attendance) {
     const time = formatTime(attendance.submitted_at);
@@ -170,13 +238,43 @@ function renderTodayStatus(attendance) {
     desktopBadge.textContent = label;
     desktopBadge.className = className;
   }
-  if (mobileBadge) mobileBadge.textContent = label;
-  if (timeLimit) timeLimit.textContent = detail;
-  if (absenButton && locked) {
-    absenButton.removeAttribute("href");
-    absenButton.removeAttribute("onclick");
-    absenButton.style.pointerEvents = "none";
-    absenButton.style.opacity = "0.75";
+  if (mobileBadge) {
+    mobileBadge.classList.remove("skeleton-line", "skeleton-text-sm");
+    mobileBadge.textContent = label;
+  }
+  if (timeLimit) {
+    timeLimit.classList.remove("skeleton-line", "skeleton-text-md");
+    timeLimit.textContent = detail;
+  }
+  updateAttendanceButton(absenButton, locked);
+}
+
+function updateAttendanceButton(button, locked) {
+  if (!button) return;
+
+  if (locked) {
+    button.removeAttribute("href");
+    button.removeAttribute("onclick");
+    button.style.pointerEvents = "none";
+    button.style.opacity = "0.75";
+    button.setAttribute("aria-disabled", "true");
+    if ("disabled" in button) button.disabled = true;
+    return;
+  }
+
+  if (button.tagName === "A") button.href = "absen.html";
+  else button.setAttribute("onclick", "window.location.href = 'absen.html'");
+  button.style.pointerEvents = "";
+  button.style.opacity = "";
+  button.removeAttribute("aria-disabled");
+  if ("disabled" in button) button.disabled = false;
+}
+
+function refreshDashboardAfterDevTimeChange() {
+  const page = location.pathname.split("/").pop() || "";
+  if (page === "dashboard.html") {
+    loadTodayStatus();
+    loadLeaderboard();
   }
 }
 
@@ -186,19 +284,16 @@ async function loadHistory() {
 }
 
 function renderHistory(items) {
-  const desktop = document.querySelector(".history-list");
-  const mobile = document.querySelector(".history-card");
-  if (!desktop && !mobile) return;
+  const container = isMobile() ? document.querySelector(".history-card") : document.querySelector(".history-list");
+  if (!container) return;
 
   if (!items.length) {
     const empty = isMobile() ? '<article class="history-item"><div><h3>Belum ada riwayat</h3><p>Absensi terbaru akan tampil di sini</p></div></article>' : '<div class="history-card"><div class="history-details"><h4>Belum ada riwayat</h4><p>Absensi terbaru akan tampil di sini</p></div></div>';
-    if (desktop) desktop.innerHTML = empty;
-    if (mobile) mobile.innerHTML = empty;
+    container.innerHTML = empty;
     return;
   }
 
-  if (desktop) desktop.innerHTML = items.slice(0, 5).map(historyDesktop).join("");
-  if (mobile) mobile.innerHTML = items.slice(0, 3).map(historyMobile).join("");
+  container.innerHTML = isMobile() ? items.slice(0, 3).map(historyMobile).join("") : items.slice(0, 5).map(historyDesktop).join("");
 }
 
 function historyDesktop(item) {
@@ -362,12 +457,43 @@ function clockIcon() {
 function startClock() {
   const clock = document.querySelector(".current-time h2");
   if (!clock) return;
+  let demoBase = null;
+  let realBase = null;
+
+  sihadirFetch("/dev/time.php")
+    .then((data) => {
+      if (data.datetime) setDemoClock(data.datetime);
+      tick();
+    })
+    .catch(() => {});
+
+  window.addEventListener("sihadir:dev-time", (event) => {
+    setDemoClock(event.detail?.datetime || null);
+    tick();
+  });
+
   const tick = () => {
-    const now = new Date();
-    clock.textContent = now.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", hour12: false }).replace(".", ":");
+    const now = demoBase && realBase ? new Date(demoBase.getTime() + (Date.now() - realBase.getTime())) : new Date();
+    clock.innerHTML = formatClockWithSeconds(now);
   };
+
+  function setDemoClock(datetime) {
+    if (!datetime) {
+      demoBase = null;
+      realBase = null;
+      return;
+    }
+    demoBase = new Date(datetime.replace(" ", "T"));
+    realBase = new Date();
+  }
+
   tick();
   setInterval(tick, 1000);
+}
+
+function formatClockWithSeconds(value) {
+  const parts = value.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false }).replace(/\./g, ":").split(":");
+  return `${parts[0]}:${parts[1]}<span class="time-seconds">${parts[2]}</span>`;
 }
 
 function historyTitle(item) {
@@ -407,6 +533,7 @@ function escapeHtml(value) {
 function isMobile() {
   return location.pathname.includes("frondend_mobile_absen");
 }
+
 
 
 
