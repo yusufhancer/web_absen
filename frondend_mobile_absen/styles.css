@@ -2221,6 +2221,107 @@ p {
   stroke-linejoin: round;
 }
 
+.export-pdf-button.is-exporting {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 10mm;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  body {
+    background: #ffffff !important;
+  }
+
+  .weekly-page {
+    width: 100% !important;
+    max-width: none !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+  }
+
+  .weekly-topbar a,
+  .weekly-search,
+  .export-pdf-button,
+  .weekly-table-footer {
+    display: none !important;
+  }
+
+  .weekly-topbar {
+    height: auto !important;
+    display: block !important;
+    margin-bottom: 8px !important;
+  }
+
+  .weekly-topbar h1 {
+    font-size: 16pt !important;
+    color: #111827 !important;
+  }
+
+  .weekly-filters,
+  .weekly-legend {
+    margin: 6px 0 10px !important;
+    gap: 8px !important;
+  }
+
+  .weekly-filters button {
+    min-height: 0 !important;
+    padding: 3px 8px !important;
+    color: #111827 !important;
+    background: #ffffff !important;
+    border-color: #d1d5db !important;
+    font-size: 8pt !important;
+  }
+
+  .weekly-table-card,
+  .weekly-table-scroll {
+    overflow: visible !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    background: #ffffff !important;
+  }
+
+  .weekly-table {
+    width: 100% !important;
+    table-layout: fixed !important;
+    border-collapse: collapse !important;
+    font-size: 6.5pt !important;
+  }
+
+  .weekly-table th,
+  .weekly-table td {
+    height: auto !important;
+    padding: 3px 2px !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .weekly-table .student-column,
+  .weekly-table tbody th {
+    position: static !important;
+    width: 34mm !important;
+  }
+
+  .weekly-table tbody strong {
+    font-size: 7pt !important;
+  }
+
+  .weekly-table tbody small {
+    font-size: 6pt !important;
+  }
+}
+
 .chair-status-card {
   min-height: 86px;
   margin-top: 26px;

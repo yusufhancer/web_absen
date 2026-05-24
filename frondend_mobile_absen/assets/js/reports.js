@@ -4,6 +4,8 @@ document.addEventListener("DOMContentLoaded", () => {
   if (page === "rekap-mingguan.html") initMobileMonthlyDetail();
 });
 
+let currentMobileMonthlyReport = null;
+
 function initMobileMonthlyLinks() {
   const now = new Date();
   let year = Number(new URLSearchParams(location.search).get("year")) || now.getFullYear();
@@ -62,6 +64,7 @@ function renderMobileMonthlyDetail(data) {
   const table = document.querySelector(".weekly-table");
   if (!table) return;
 
+  currentMobileMonthlyReport = data;
   renderMobileReportHeader(data);
   renderMobileReportHead(table, data.days || []);
   renderMobileReportRows(table, data.items || [], data.days || []);
@@ -158,8 +161,115 @@ function bindMobileReportExport() {
   button.dataset.reportBound = "1";
   button.addEventListener("click", (event) => {
     event.preventDefault();
-    window.print();
+    if (!currentMobileMonthlyReport) return;
+    button.classList.add("is-exporting");
+    exportMobileReportPdf(currentMobileMonthlyReport);
+    setTimeout(() => {
+      button.classList.remove("is-exporting");
+    }, 500);
   });
+}
+
+function exportMobileReportPdf(data) {
+  const keyword = document.querySelector(".weekly-search input")?.value?.trim().toLowerCase() || "";
+  const items = (data.items || []).filter((student) => `${student.name} ${student.nis}`.toLowerCase().includes(keyword));
+  const period = `${mobileReportMonthName(data.month)} ${data.year}`;
+  const doc = window.open("", "_blank", "width=1200,height=800");
+
+  if (!doc) {
+    alert("Popup diblokir. Izinkan popup untuk export PDF.");
+    return;
+  }
+
+  doc.document.write(buildMobileReportPrintHtml({ period, className: data.class_name || "-", days: data.days || [], items }));
+  doc.document.close();
+  doc.focus();
+  setTimeout(() => {
+    doc.print();
+    doc.close();
+  }, 250);
+}
+
+function buildMobileReportPrintHtml({ period, className, days, items }) {
+  return `<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>SIHADIR - ${escapeMobileReport(period)} - ${escapeMobileReport(className)}</title>
+  <style>
+    @page { size: A4 landscape; margin: 10mm; }
+    * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    body { margin: 0; color: #111827; font-family: Arial, sans-serif; font-size: 9px; }
+    .report-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; border-bottom: 2px solid #111827; padding-bottom: 8px; }
+    h1 { margin: 0 0 4px; font-size: 18px; text-transform: uppercase; letter-spacing: 0; }
+    .meta { display: grid; grid-template-columns: 68px 1fr; gap: 3px 8px; font-size: 10px; }
+    .legend { display: flex; gap: 8px; justify-content: flex-end; margin-top: 6px; font-size: 9px; }
+    table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    th, td { border: 1px solid #4b5563; padding: 3px 2px; text-align: center; vertical-align: middle; }
+    th { background: #e5e7eb; font-weight: 700; }
+    .student { width: 38mm; text-align: left; }
+    .name { display: block; font-weight: 700; font-size: 8px; }
+    .nis { display: block; margin-top: 2px; color: #374151; font-size: 7px; }
+    .day { width: 5.8mm; }
+    .total { width: 7mm; font-weight: 700; }
+    .s-hadir { background: #dcfce7; color: #166534; }
+    .s-sakit { background: #ffedd5; color: #9a3412; }
+    .s-izin { background: #dbeafe; color: #1d4ed8; }
+    .s-alpha { background: #fee2e2; color: #991b1b; }
+    .empty { background: #ffffff; color: #ffffff; }
+    .foot { margin-top: 8px; display: flex; justify-content: space-between; color: #374151; font-size: 9px; }
+  </style>
+</head>
+<body>
+  <header class="report-head">
+    <div>
+      <h1>Laporan Kehadiran Siswa</h1>
+      <div class="meta">
+        <span>Kelas</span><strong>${escapeMobileReport(className)}</strong>
+        <span>Periode</span><strong>${escapeMobileReport(period)}</strong>
+        <span>Total siswa</span><strong>${items.length}</strong>
+      </div>
+    </div>
+    <div>
+      <strong>SIHADIR</strong>
+      <div class="legend"><span>H=Hadir</span><span>S=Sakit</span><span>I=Izin</span><span>A=Alpha</span></div>
+    </div>
+  </header>
+  <table>
+    <thead>
+      <tr>
+        <th rowspan="2" class="student">Siswa</th>
+        <th colspan="${days.length}">Tanggal</th>
+        <th colspan="4">Total</th>
+      </tr>
+      <tr>
+        ${days.map((day) => `<th class="day">${day.day}</th>`).join("")}
+        <th class="total">H</th><th class="total">S</th><th class="total">I</th><th class="total">A</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${items.length ? items.map((student) => `
+        <tr>
+          <td class="student"><span class="name">${escapeMobileReport(student.name)}</span><span class="nis">${escapeMobileReport(student.nis)}</span></td>
+          ${(student.daily || []).map((day) => mobileReportPrintStatusCell(day.status)).join("")}
+          <td class="total">${student.summary?.hadir || 0}</td>
+          <td class="total">${student.summary?.sakit || 0}</td>
+          <td class="total">${student.summary?.izin || 0}</td>
+          <td class="total">${student.summary?.alpha || 0}</td>
+        </tr>
+      `).join("") : `<tr><td colspan="${days.length + 5}">Tidak ada data laporan.</td></tr>`}
+    </tbody>
+  </table>
+  <div class="foot"><span>Dicetak: ${escapeMobileReport(new Date().toLocaleString("id-ID"))}</span><span>Generated by SIHADIR</span></div>
+</body>
+</html>`;
+}
+
+function mobileReportPrintStatusCell(status) {
+  const labels = { hadir: "H", sakit: "S", izin: "I", alpha: "A" };
+  const safeStatus = ["hadir", "sakit", "izin", "alpha"].includes(status) ? status : "";
+  if (!safeStatus) return '<td class="empty">-</td>';
+  return `<td class="s-${safeStatus}">${labels[safeStatus]}</td>`;
 }
 
 function mobileReportMonthName(month) {
