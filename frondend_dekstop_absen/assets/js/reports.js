@@ -96,7 +96,7 @@ function renderReportRows(table, items, days) {
   if (!tbody) return;
 
   if (!items.length) {
-    tbody.innerHTML = `<tr><td class="col-siswa" colspan="${days.length + 5}">Belum ada siswa di kelas ini</td></tr>`;
+    tbody.innerHTML = `<tr><td class="col-siswa report-empty" colspan="${days.length + 5}"><div class="report-empty-box"><strong>Belum ada data laporan</strong><span>Data akan muncul setelah absensi siswa disetujui guru.</span></div></td></tr>`;
     if (footer) footer.textContent = "Menampilkan 0 siswa";
     return;
   }
@@ -120,7 +120,9 @@ function renderReportRows(table, items, days) {
 
 function reportStatusCell(status) {
   const labels = { hadir: "✓", sakit: "+", izin: "i", alpha: "×" };
-  const safeStatus = ["hadir", "sakit", "izin", "alpha"].includes(status) ? status : "alpha";
+  if (!status) return '<td><div class="status-cell status-empty"></div></td>';
+  const safeStatus = ["hadir", "sakit", "izin", "alpha"].includes(status) ? status : "";
+  if (!safeStatus) return '<td><div class="status-cell status-empty"></div></td>';
   return `<td><div class="status-cell ${safeStatus}">${labels[safeStatus]}</div></td>`;
 }
 

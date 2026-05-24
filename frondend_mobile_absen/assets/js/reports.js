@@ -49,7 +49,7 @@ async function initMobileMonthlyDetail() {
     const data = await sihadirFetch(`/reports/monthly-detail.php?year=${year}&month=${month}`);
     renderMobileMonthlyDetail(data);
   } catch (error) {
-    if (tbody) tbody.innerHTML = `<tr><th>Gagal memuat</th><td class="alpha">${escapeMobileReport(error.message || "Error")}</td></tr>`;
+    if (tbody) tbody.innerHTML = `<tr><th>Gagal memuat</th><td class="empty-cell">${escapeMobileReport(error.message || "Error")}</td></tr>`;
   }
 }
 
@@ -106,7 +106,7 @@ function renderMobileReportRows(table, items, days) {
   if (!tbody) return;
 
   if (!items.length) {
-    tbody.innerHTML = `<tr><th><strong>Belum ada siswa</strong><small>-</small></th><td class="alpha" colspan="${days.length + 4}">×</td></tr>`;
+    tbody.innerHTML = `<tr><th class="mobile-report-empty" colspan="${days.length + 5}"><strong>Belum ada data laporan</strong><small>Data muncul setelah absensi disetujui.</small></th></tr>`;
     if (footer) footer.textContent = "Menampilkan 0 siswa";
     return;
   }
@@ -127,7 +127,9 @@ function renderMobileReportRows(table, items, days) {
 
 function mobileStatusCell(status) {
   const labels = { hadir: "✓", sakit: "+", izin: "o", alpha: "×" };
-  const safeStatus = ["hadir", "sakit", "izin", "alpha"].includes(status) ? status : "alpha";
+  if (!status) return '<td class="empty-cell"></td>';
+  const safeStatus = ["hadir", "sakit", "izin", "alpha"].includes(status) ? status : "";
+  if (!safeStatus) return '<td class="empty-cell"></td>';
   return `<td class="${safeStatus}">${labels[safeStatus]}</td>`;
 }
 

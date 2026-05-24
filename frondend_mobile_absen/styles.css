@@ -2030,22 +2030,50 @@ p {
 
 .status-chip.hadir,
 .weekly-table td.hadir {
-  background: var(--button);
+  background: #16a34a;
 }
 
 .status-chip.izin,
 .weekly-table td.izin {
-  background: #0b79b7;
+  background: #0284c7;
 }
 
 .status-chip.sakit,
 .weekly-table td.sakit {
-  background: #985124;
+  background: #d97706;
 }
 
 .status-chip.alpha,
 .weekly-table td.alpha {
-  background: #bc1d26;
+  background: #dc2626;
+}
+
+.weekly-table td.empty-cell {
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  color: transparent;
+}
+
+.weekly-table tbody th.mobile-report-empty {
+  position: static;
+  height: 150px;
+  padding: 24px;
+  background: linear-gradient(180deg, #f0fdf4 0%, #ffffff 100%);
+  border: 1px dashed #bbf7d0;
+  box-shadow: none;
+  text-align: center;
+}
+
+.weekly-table tbody th.mobile-report-empty strong {
+  color: #166534;
+  font-size: 14px;
+}
+
+.weekly-table tbody th.mobile-report-empty small {
+  margin-top: 8px;
+  color: #64748b;
+  font-size: 11px;
+  line-height: 1.35;
 }
 
 .weekly-table-card {

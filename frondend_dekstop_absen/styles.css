@@ -2215,10 +2215,46 @@ body {
   color: white;
 }
 
-.hadir { background-color: #b76e1a; }
-.izin { background-color: #026ca6; }
-.sakit { background-color: #8c5011; }
-.alpha { background-color: #c92a2a; }
+.hadir { background-color: #16a34a; }
+.izin { background-color: #0284c7; }
+.sakit { background-color: #d97706; }
+.alpha { background-color: #dc2626; }
+.status-empty {
+  background-color: #f8fafc;
+  border: 1px dashed #cbd5e1;
+}
+.report-empty {
+  height: 240px;
+  background-color: #ffffff;
+  text-align: center !important;
+}
+
+.report-empty-box {
+  width: min(100%, 420px);
+  min-height: 132px;
+  margin: 28px auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px dashed #bbf7d0;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #f0fdf4 0%, #ffffff 100%);
+  color: #166534;
+}
+
+.report-empty-box strong {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.report-empty-box span {
+  max-width: 280px;
+  color: #64748b;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
 
 .detail-table-card {
   background-color: #ffffff;

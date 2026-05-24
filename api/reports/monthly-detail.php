@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../helpers/auth.php';
+require_once __DIR__ . '/../helpers/time.php';
 
 require_method('GET');
 
@@ -34,6 +35,14 @@ $attendanceStmt = db()->prepare('SELECT a.user_id, a.status, a.submitted_at, a.n
 $attendanceStmt->execute([$user['class_id'], $year, $month]);
 $attendances = $attendanceStmt->fetchAll();
 
+$now = app_now();
+if (!$now) {
+    $nowStmt = db()->query('SELECT NOW() AS current_datetime');
+    $nowRow = $nowStmt->fetch();
+    $now = $nowRow['current_datetime'] ?? date('Y-m-d H:i:s');
+}
+$limitTime = attendance_limit_time() . ':00';
+
 $byUserDate = [];
 foreach ($attendances as $attendance) {
     $byUserDate[$attendance['user_id']][$attendance['absen_date']] = [
@@ -50,8 +59,13 @@ foreach ($students as $student) {
 
     foreach ($days as $day) {
         $record = $byUserDate[$student['id']][$day['date']] ?? null;
-        $status = $record['status'] ?? 'alpha';
-        $summary[$status]++;
+        $status = $record['status'] ?? '';
+        if ($status === '' && ($day['date'] . ' ' . $limitTime) < $now) {
+            $status = 'alpha';
+        }
+        if ($status !== '') {
+            $summary[$status]++;
+        }
         $daily[] = [
             'date' => $day['date'],
             'status' => $status,
