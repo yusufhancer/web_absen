@@ -7,6 +7,8 @@ async function loadPending() {
   const container = document.querySelector(".pr-list");
   const info = document.querySelector(".pr-list-info");
   if (!container) return;
+  renderPendingSkeleton(container);
+  updateReviewInfo(info, null);
 
   try {
     const data = await sihadirFetch("/attendances/pending.php");
@@ -15,6 +17,8 @@ async function loadPending() {
     updateReviewInfo(info, items.length);
     bindReviewActions(container, info);
   } catch (error) {
+    container.innerHTML = emptyReviewItem();
+    updateReviewInfo(info, 0);
     sihadirToast(error.message || "Gagal memuat permintaan review");
   }
 }
@@ -103,7 +107,29 @@ function bindReviewActions(container, info) {
 
 function updateReviewInfo(info, count) {
   if (!info) return;
+  if (count === null) {
+    info.textContent = "";
+    info.classList.add("skeleton-line", "skeleton-text-md");
+    return;
+  }
+  info.classList.remove("skeleton-line", "skeleton-text-md");
   info.textContent = count > 0 ? `Menampilkan ${count} permintaan review` : "Tidak ada permintaan review";
+}
+
+function renderPendingSkeleton(container) {
+  container.innerHTML = Array.from({ length: 5 }, () => `
+          <div class="pr-item skeleton-row">
+            <span class="skeleton-circle"></span>
+            <div class="pr-details">
+              <span class="skeleton-line skeleton-text-lg"></span>
+              <span class="skeleton-line skeleton-text-md"></span>
+              <span class="skeleton-line skeleton-text-sm"></span>
+            </div>
+            <div class="pr-actions">
+              <span class="skeleton-circle"></span>
+              <span class="skeleton-circle"></span>
+            </div>
+          </div>`).join("");
 }
 
 function statusText(status) {

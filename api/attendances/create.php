@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../helpers/auth.php';
+require_once __DIR__ . '/../helpers/time.php';
 
 require_method('POST');
 
@@ -22,18 +23,36 @@ if (mb_strlen($notes) > 100) {
     fail('Kata hari ini maksimal 100 karakter');
 }
 
-$stmt = db()->prepare('INSERT INTO attendances (user_id, class_id, absen_number, status, notes, submitted_at) VALUES (?, ?, ?, ?, ?, NOW())');
+if (attendance_closed()) {
+    fail('Waktu presensi sudah ditutup', 403);
+}
+
+$demoNow = app_now();
+$stmt = db()->prepare($demoNow
+    ? 'INSERT INTO attendances (user_id, class_id, absen_number, status, notes, submitted_at) VALUES (?, ?, ?, ?, ?, ?)'
+    : 'INSERT INTO attendances (user_id, class_id, absen_number, status, notes, submitted_at) VALUES (?, ?, ?, ?, ?, NOW())'
+);
 
 try {
-    $stmt->execute([
+    $params = [
         $user['id'],
         $user['class_id'],
         $absenNumber,
         $status,
         $notes !== '' ? $notes : null,
-    ]);
+    ];
 
-    ok(['id' => db()->lastInsertId()], 'Absensi terkirim');
+    if ($demoNow) {
+        $params[] = $demoNow;
+    }
+
+    $stmt->execute($params);
+
+    $id = db()->lastInsertId();
+    $createdStmt = db()->prepare('SELECT id, status, notes, submitted_at FROM attendances WHERE id = ?');
+    $createdStmt->execute([$id]);
+
+    ok(['attendance' => $createdStmt->fetch()], 'Absensi terkirim');
 } catch (PDOException $e) {
     if ($e->getCode() === '23000') {
         fail('Sudah absen hari ini', 409);

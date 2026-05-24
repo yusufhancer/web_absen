@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const page = location.pathname.split("/").pop() || "";
   const protectedPage = /^(dashboard|profile|leaderboard|permintaan|rekap|detail|absen|settings)/.test(page);
   if (!protectedPage) return;
+  sihadirSkeleton.page(page);
 
   let me;
   try {
@@ -19,18 +20,75 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   renderUser(me);
+  initDevClock();
 
-  if (page === "dashboard.html") {
+  if (page === "dashboard-guru.html" || page === "dashboard-ketua.html") {
+    startClock();
+    await loadAdminDashboard(page);
+  } else if (page === "dashboard.html") {
     startClock();
     await Promise.all([loadTodayStatus(), loadHistory(), loadLeaderboard()]);
+  } else if (page.startsWith("dashboard")) {
+    startClock();
+    await loadLeaderboard();
   } else if (page.includes("leaderboard")) {
     await loadLeaderboard();
   }
 });
 
+async function initDevClock() {
+  const existing = document.querySelector("[data-dev-clock]");
+  if (existing) return;
+
+  let data;
+  try {
+    data = await sihadirFetch("/dev/time.php");
+  } catch (error) {
+    return;
+  }
+
+  const panel = document.createElement("div");
+  panel.dataset.devClock = "1";
+  panel.style.cssText = "position:fixed;right:18px;bottom:18px;z-index:9999;background:#ffffff;border:1px solid #efe4d8;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);padding:10px;display:flex;gap:8px;align-items:center;font-family:inherit;";
+  panel.innerHTML = `
+    <input type="datetime-local" value="${devClockInputValue(data.datetime)}" style="border:1px solid #efe4d8;border-radius:6px;padding:8px;font:inherit;font-size:12px;">
+    <button type="button" data-dev-set style="border:0;border-radius:6px;background:#8c5011;color:#fff;padding:8px 10px;font-weight:700;cursor:pointer;">Set</button>
+    <button type="button" data-dev-reset style="border:1px solid #efe4d8;border-radius:6px;background:#fff;color:#8c5011;padding:8px 10px;font-weight:700;cursor:pointer;">Reset</button>
+  `;
+
+  document.body.appendChild(panel);
+
+  const input = panel.querySelector("input");
+  panel.querySelector("[data-dev-set]")?.addEventListener("click", async () => {
+    if (!input.value) return sihadirToast("Datetime wajib diisi");
+    const response = await sihadirFetch("/dev/time.php", {
+      method: "POST",
+      body: JSON.stringify({ datetime: input.value }),
+    });
+    input.value = devClockInputValue(response.datetime);
+    window.dispatchEvent(new CustomEvent("sihadir:dev-time", { detail: { datetime: response.datetime } }));
+    refreshDashboardAfterDevTimeChange();
+    sihadirToast("Datetime demo aktif");
+  });
+
+  panel.querySelector("[data-dev-reset]")?.addEventListener("click", async () => {
+    await sihadirFetch("/dev/time.php", { method: "DELETE" });
+    input.value = "";
+    window.dispatchEvent(new CustomEvent("sihadir:dev-time", { detail: { datetime: null } }));
+    refreshDashboardAfterDevTimeChange();
+    sihadirToast("Datetime demo direset");
+  });
+}
+
+function devClockInputValue(value) {
+  if (!value) return "";
+  return String(value).replace(" ", "T").slice(0, 16);
+}
+
 function renderUser(me) {
   const className = me.class_name || "-";
   const roleLabel = roleTitle(me.role);
+  sihadirSkeleton.clearText();
 
   sihadirText(".user-name", me.name);
   sihadirText(".user-class", className);
@@ -50,6 +108,7 @@ function renderUser(me) {
 }
 
 function allowRolePage(page, role) {
+  if (/^(rekap|detail)/.test(page)) return ["guru", "ketua_kelas"].includes(role);
   if (!page.includes("profile")) return true;
   if (page === "profile-guru.html") return role === "guru";
   if (page === "profile-ketua.html") return role === "ketua_kelas";
@@ -61,21 +120,95 @@ function roleTitle(role) {
   return { pelajar: "Pelajar", guru: "Guru", ketua_kelas: "Ketua Kelas" }[role] || title(role);
 }
 
-async function loadTodayStatus() {
-  const data = await sihadirFetch("/attendances/today.php").catch(() => ({ attendance: null }));
-  renderTodayStatus(data.attendance || null);
+async function loadAdminDashboard(page) {
+  await Promise.all([loadAdminClassHistory(), loadAdminReviewCards(page), loadLeaderboard()]);
 }
 
-function renderTodayStatus(attendance) {
+async function loadAdminClassHistory() {
+  const data = await sihadirFetch("/attendances/recent-class.php?limit=5").catch(() => ({ items: [] }));
+  renderAdminHistory(data.items || []);
+}
+
+function renderAdminHistory(items) {
+  const container = document.querySelector(".history-list");
+  if (!container) return;
+
+  if (!items.length) {
+    container.innerHTML = '<div class="history-card"><div class="history-details"><h4>Belum ada riwayat kelas</h4><p>Absensi siswa terbaru akan tampil di sini</p></div></div>';
+    return;
+  }
+
+  container.innerHTML = items.map((item) => {
+    const danger = item.approval_status === "rejected" || item.status !== "hadir";
+    const iconClass = danger ? "icon-danger" : "icon-success";
+    const textClass = danger ? ' class="text-danger"' : "";
+    return `<div class="history-card"><div class="${iconClass}">${historyIcon(danger)}</div><div class="history-details"><h4${textClass}>${escapeHtml(item.nama_pelajar)} - ${title(item.status)}</h4><p>${escapeHtml(item.class_name)} • ${item.time_label || formatTime(item.submitted_at)} WIB • ${approvalText(item.approval_status)}</p></div></div>`;
+  }).join("");
+}
+
+async function loadAdminReviewCards(page) {
+  const data = await sihadirFetch("/attendances/pending.php").catch(() => ({ items: [] }));
+  renderAdminReviewCards(data.items || [], page);
+}
+
+function renderAdminReviewCards(items, page) {
+  const container = document.querySelector(".review-list");
+  const button = document.querySelector(".review-section .btn-full-width");
+  if (!container) return;
+
+  const reviewUrl = page === "dashboard-guru.html" ? "permintaan-review-guru.html" : "permintaan-review.html";
+  if (button) button.onclick = () => { window.location.href = reviewUrl; };
+
+  if (!items.length) {
+    container.innerHTML = '<div class="review-card"><div class="avatar-initial bg-peach">✓</div><div class="review-details"><h4>Tidak ada permintaan review</h4><p>Semua absensi sudah diverifikasi</p></div><svg class="icon-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>';
+    return;
+  }
+
+  container.innerHTML = items.slice(0, 3).map((item) => `<div class="review-card" data-href="${reviewUrl}"><div class="avatar-initial bg-peach">${initial(item.nama_pelajar)}</div><div class="review-details"><h4>${escapeHtml(item.nama_pelajar)}</h4><p>${escapeHtml(item.class_name || item.kelas || "Kelas")} • ${item.time_label || formatTime(item.submitted_at)} WIB • Menunggu Verifikasi</p></div><svg class="icon-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>`).join("");
+  container.onclick = (event) => {
+    const card = event.target.closest(".review-card[data-href]");
+    if (card) window.location.href = card.dataset.href;
+  };
+}
+
+function approvalText(status) {
+  return { pending: "Menunggu Review", approved: "Disetujui", rejected: "Ditolak" }[status] || status;
+}
+async function loadTodayStatus() {
+  const [data, config] = await Promise.all([
+    sihadirFetch("/attendances/today.php").catch(() => ({ attendance: null })),
+    loadAppConfig(),
+  ]);
+  renderTodayStatus(data.attendance || null, config);
+}
+
+async function loadAppConfig() {
+  return sihadirFetch("/config/app.php").catch(() => ({
+    attendance_limit_time: "08:00",
+    attendance_closed: false,
+  }));
+}
+
+function renderTodayStatus(attendance, config = {}) {
   const desktopBadge = document.querySelector(".badge-warning, .badge-success, .badge-danger");
   const mobileBadge = document.querySelector(".status-card span");
   const timeLimit = document.querySelector(".time-limit, .status-card p");
+  const infoIcon = document.querySelector(".status-label .info-icon");
   const absenButton = document.querySelector(".btn-outline-white, .attendance-hero");
+  const limitTime = String(config.attendance_limit_time || "08:00").slice(0, 5);
 
   let label = "Belum Absen";
-  let detail = "Batas waktu: 08:00 WIB";
+  let detail = `Batas waktu: ${limitTime} WIB`;
   let className = "badge-warning";
-  let locked = false;
+  let iconClass = "info-icon info-warning";
+  let locked = Boolean(config.attendance_closed);
+
+  if (locked) {
+    label = "Presensi Ditutup";
+    detail = `Presensi ditutup pukul ${limitTime} WIB`;
+    className = "badge-danger";
+    iconClass = "info-icon info-danger";
+  }
 
   if (attendance) {
     const time = formatTime(attendance.submitted_at);
@@ -87,26 +220,63 @@ function renderTodayStatus(attendance) {
       label = "Sudah Absen";
       detail = `${title(attendance.status)} - ${time} WIB`;
       className = "badge-success";
+      iconClass = "info-icon info-success";
       locked = true;
     } else if (attendance.approval_status === "rejected") {
       label = "Ditolak";
       detail = attendance.rejection_reason || "Absensi ditolak";
       className = "badge-danger";
+      iconClass = "info-icon info-danger";
       locked = true;
     }
   }
 
+  if (infoIcon) {
+    infoIcon.textContent = "";
+    infoIcon.className = iconClass;
+    infoIcon.textContent = "";
+  }
   if (desktopBadge) {
     desktopBadge.textContent = label;
     desktopBadge.className = className;
   }
-  if (mobileBadge) mobileBadge.textContent = label;
-  if (timeLimit) timeLimit.textContent = detail;
-  if (absenButton && locked) {
-    absenButton.removeAttribute("href");
-    absenButton.removeAttribute("onclick");
-    absenButton.style.pointerEvents = "none";
-    absenButton.style.opacity = "0.75";
+  if (mobileBadge) {
+    mobileBadge.classList.remove("skeleton-line", "skeleton-text-sm");
+    mobileBadge.textContent = label;
+  }
+  if (timeLimit) {
+    timeLimit.classList.remove("skeleton-line", "skeleton-text-md");
+    timeLimit.textContent = detail;
+  }
+  updateAttendanceButton(absenButton, locked);
+}
+
+function updateAttendanceButton(button, locked) {
+  if (!button) return;
+
+  if (locked) {
+    button.removeAttribute("href");
+    button.removeAttribute("onclick");
+    button.style.pointerEvents = "none";
+    button.style.opacity = "0.75";
+    button.setAttribute("aria-disabled", "true");
+    if ("disabled" in button) button.disabled = true;
+    return;
+  }
+
+  if (button.tagName === "A") button.href = "absen.html";
+  else button.setAttribute("onclick", "window.location.href = 'absen.html'");
+  button.style.pointerEvents = "";
+  button.style.opacity = "";
+  button.removeAttribute("aria-disabled");
+  if ("disabled" in button) button.disabled = false;
+}
+
+function refreshDashboardAfterDevTimeChange() {
+  const page = location.pathname.split("/").pop() || "";
+  if (page === "dashboard.html") {
+    loadTodayStatus();
+    loadLeaderboard();
   }
 }
 
@@ -116,19 +286,16 @@ async function loadHistory() {
 }
 
 function renderHistory(items) {
-  const desktop = document.querySelector(".history-list");
-  const mobile = document.querySelector(".history-card");
-  if (!desktop && !mobile) return;
+  const container = isMobile() ? document.querySelector(".history-card") : document.querySelector(".history-list");
+  if (!container) return;
 
   if (!items.length) {
     const empty = isMobile() ? '<article class="history-item"><div><h3>Belum ada riwayat</h3><p>Absensi terbaru akan tampil di sini</p></div></article>' : '<div class="history-card"><div class="history-details"><h4>Belum ada riwayat</h4><p>Absensi terbaru akan tampil di sini</p></div></div>';
-    if (desktop) desktop.innerHTML = empty;
-    if (mobile) mobile.innerHTML = empty;
+    container.innerHTML = empty;
     return;
   }
 
-  if (desktop) desktop.innerHTML = items.slice(0, 5).map(historyDesktop).join("");
-  if (mobile) mobile.innerHTML = items.slice(0, 3).map(historyMobile).join("");
+  container.innerHTML = isMobile() ? items.slice(0, 3).map(historyMobile).join("") : items.slice(0, 5).map(historyDesktop).join("");
 }
 
 function historyDesktop(item) {
@@ -144,11 +311,12 @@ function historyMobile(item) {
 }
 
 async function loadLeaderboard() {
-  const isFullPage = Boolean(document.querySelector(".podium-card") && document.querySelector(".rankings-table tbody"));
-  const limit = isFullPage ? 10 : (isMobile() ? 3 : 8);
+  const isFullPage = Boolean((document.querySelector(".podium-card") && document.querySelector(".rankings-table tbody")) || (document.querySelector(".podium") && document.querySelector(".monthly-list")));
+  const limit = isFullPage ? 50 : (isMobile() ? 3 : 8);
   const data = await sihadirFetch(`/leaderboard/today.php?limit=${limit}`).catch(() => ({ items: [] }));
-  if (isFullPage) renderFullLeaderboard(data.items || []);
-  else renderLeaderboard(data.items || [], limit);
+  const items = sortAttendanceItems(data.items || []);
+  if (isFullPage) renderFullLeaderboard(items);
+  else renderLeaderboard(items, limit);
 }
 
 function renderLeaderboard(items, limit) {
@@ -163,18 +331,30 @@ function renderLeaderboard(items, limit) {
 }
 
 function renderFullLeaderboard(items) {
-  const podium = document.querySelector(".podium-card");
   const tbody = document.querySelector(".rankings-table tbody");
-  if (!podium || !tbody) return;
+  const podium = tbody ? document.querySelector(".podium-card") : null;
+  const mobilePodium = document.querySelector(".podium");
+  const monthlyList = document.querySelector(".monthly-list");
+  if (!podium && !mobilePodium && !tbody && !monthlyList) return;
+
+  updateLeaderboardHeader();
 
   if (!items.length) {
-    podium.innerHTML = '<div class="podium-item podium-1"><h4>Belum ada leaderboard</h4><div class="lb-time">Menunggu absensi approved</div></div>';
-    tbody.innerHTML = '<tr><td colspan="4" class="class-col">Belum ada data absensi approved hari ini</td></tr>';
+    if (podium) podium.innerHTML = '<div class="podium-item podium-1"><h4>Belum ada data</h4><div class="lb-time">Menunggu absensi approved</div></div>';
+    if (mobilePodium) mobilePodium.innerHTML = '<article class="podium-card podium-first"><h3>Belum ada data</h3><p>Menunggu approved</p></article>';
+    if (tbody) tbody.innerHTML = '<tr><td colspan="4" class="class-col">Belum ada data absensi approved hari ini</td></tr>';
+    if (monthlyList) monthlyList.innerHTML = '<li><div><h3>Belum ada data</h3><p>Menunggu absensi approved</p></div></li>';
     return;
   }
 
-  podium.innerHTML = [items[1] ? podiumItem(items[1], 2) : "", items[0] ? podiumItem(items[0], 1) : "", items[2] ? podiumItem(items[2], 3) : ""].join("");
-  tbody.innerHTML = withStatusSeparators(items.slice(3), tableRow, true).join("") || '<tr><td colspan="4" class="class-col">Belum ada ranking tambahan</td></tr>';
+  const presentItems = items.filter((item) => item.status === "hadir");
+  if (podium) podium.innerHTML = [presentItems[1] ? podiumItem(presentItems[1], 2) : "", presentItems[0] ? podiumItem(presentItems[0], 1) : "", presentItems[2] ? podiumItem(presentItems[2], 3) : ""].join("") || '<div class="podium-item podium-1"><h4>Belum ada hadir</h4><div class="lb-time">Sakit / izin tampil di tabel</div></div>';
+  if (mobilePodium) mobilePodium.innerHTML = [presentItems[1] ? mobilePodiumItem(presentItems[1], 2) : "", presentItems[0] ? mobilePodiumItem(presentItems[0], 1) : "", presentItems[2] ? mobilePodiumItem(presentItems[2], 3) : ""].join("") || '<article class="podium-card podium-first"><h3>Belum ada hadir</h3><p>Sakit / izin di daftar</p></article>';
+  if (tbody) {
+    setLeaderboardTableHead();
+    tbody.innerHTML = withStatusSeparators(items, tableRow, true).join("");
+  }
+  if (monthlyList) monthlyList.innerHTML = withStatusSeparators(items, mobileMonthlyRow).join("");
 }
 
 function podiumItem(item, place) {
@@ -184,30 +364,32 @@ function podiumItem(item, place) {
   const glow = place === 1 ? " glow-gold" : "";
   const orange = place === 1 ? " text-orange" : "";
   const star = place === 1 ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="star-icon"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>' : "";
-  return `<div class="podium-item ${placeClass}"><div class="avatar-wrapper${glow}"><img src="https://i.pravatar.cc/100?u=${encodeURIComponent(item.nis || item.name)}" alt="${escapeHtml(item.name)}"><div class="badge ${badgeClass}">${item.rank}</div></div><h4>${escapeHtml(shortName(item.name))}</h4><div class="lb-time${orange}">${clockIcon()} ${item.time_label || formatTime(item.submitted_at)} ${statusBadge(item.status)}</div><div class="pedestal ${pedestalClass}">${star}</div></div>`;
+  return `<div class="podium-item ${placeClass}"><div class="avatar-wrapper${glow}"><img src="https://i.pravatar.cc/100?u=${encodeURIComponent(item.nis || item.name)}" alt="${escapeHtml(item.name)}"><div class="badge ${badgeClass}">${place}</div></div><h4>${escapeHtml(shortName(item.name))}</h4><div class="lb-time${orange}">${clockIcon()} ${item.time_label || formatTime(item.submitted_at)} ${statusBadge(item.status)}</div><div class="pedestal ${pedestalClass}">${star}</div></div>`;
 }
 
 function tableRow(item) {
   const color = ["bg-orange-light text-orange", "bg-blue-light text-blue", "bg-grey-light text-grey"][item.rank % 3];
-  return `<tr><td class="rank-col">${item.rank}</td><td><div class="student-cell"><div class="avatar-initial ${color}">${initial(item.name)}</div><span>${escapeHtml(item.name)} ${statusBadge(item.status)}</span></div></td><td class="class-col">${escapeHtml(item.kelas)}</td><td class="time-col">${item.time_label || formatTime(item.submitted_at)}</td></tr>`;
+  return `<tr><td class="rank-col">${escapeHtml(item.absen_number || "-")}</td><td><div class="student-cell"><div class="avatar-initial ${color}">${initial(item.name)}</div><span><strong>${escapeHtml(item.name)}</strong><small class="leaderboard-meta">${item.time_label || formatTime(item.submitted_at)} WIB</small></span></div></td><td class="class-col">${escapeHtml(reasonText(item))}</td><td class="time-col">${statusBadge(item.status) || "Hadir"}</td></tr>`;
 }
 
 function leaderboardDesktop(item) {
-  const rankClass = item.rank === 1 ? "rank rank-1" : "rank";
-  const color = ["bg-pink", "bg-blue", "bg-indigo", "bg-green", "bg-orange", "bg-purple", "bg-red"][item.rank % 7];
-  return `<div class="leaderboard-item"><div class="${rankClass}">${item.rank}</div><div class="avatar-initial ${color}">${initial(item.name)}</div><div class="lb-details"><h4>${escapeHtml(item.name)}</h4><span>${item.time_label || formatTime(item.submitted_at)} WIB ${statusBadge(item.status)}</span></div></div>`;
+  const rank = item.status === "hadir" ? item.presentRank : item.absen_number;
+  const rankClass = item.status === "hadir" && item.presentRank === 1 ? "rank rank-1" : "rank";
+  const color = ["bg-pink", "bg-blue", "bg-indigo", "bg-green", "bg-orange", "bg-purple", "bg-red"][(rank || item.rank) % 7];
+  return `<div class="leaderboard-item"><div class="${rankClass}">${escapeHtml(rank || "-")}</div><div class="avatar-initial ${color}">${initial(item.name)}</div><div class="lb-details"><h4>${escapeHtml(item.name)}</h4><span>${item.time_label || formatTime(item.submitted_at)} WIB ${statusBadge(item.status)}</span></div></div>`;
 }
 
 function leaderboardMobile(item) {
-  const rankClass = item.rank === 1 ? "rank rank-gold" : "rank";
-  const color = ["avatar-red", "avatar-blue", "avatar-purple"][item.rank % 3];
-  return `<li class="leaderboard-item"><span class="${rankClass}">${item.rank}</span><span class="avatar-letter ${color}">${initial(item.name)}</span><div><h3>${escapeHtml(item.name)}</h3><p>${item.time_label || formatTime(item.submitted_at)} WIB ${statusBadge(item.status)}</p></div></li>`;
+  const rank = item.status === "hadir" ? item.presentRank : item.absen_number;
+  const rankClass = item.status === "hadir" && item.presentRank === 1 ? "rank rank-gold" : "rank";
+  const color = ["avatar-red", "avatar-blue", "avatar-purple"][(rank || item.rank) % 3];
+  return `<li class="leaderboard-item"><span class="${rankClass}">${escapeHtml(rank || "-")}</span><span class="avatar-letter ${color}">${initial(item.name)}</span><div><h3>${escapeHtml(item.name)}</h3><p>${item.time_label || formatTime(item.submitted_at)} WIB ${statusBadge(item.status)}</p></div></li>`;
 }
 
 function withStatusSeparators(items, renderer, table = false) {
   let lastGroup = "";
   return items.flatMap((item, index) => {
-    const group = item.status === "hadir" ? "HADIR" : "SAKIT / IZIN";
+    const group = item.status === "hadir" ? "HADIR" : "TIDAK MASUK";
     const separator = group !== lastGroup ? statusSeparator(group, table) : "";
     lastGroup = group;
     return [separator, renderer(item, index)].filter(Boolean);
@@ -224,6 +406,52 @@ function statusBadge(status) {
   return `<small style="font-weight:700;color:#a15e1b;">${title(status)}</small>`;
 }
 
+function sortAttendanceItems(items) {
+  let presentRank = 0;
+  return [...items].sort((a, b) => {
+    const groupA = a.status === "hadir" ? 1 : 0;
+    const groupB = b.status === "hadir" ? 1 : 0;
+    if (groupA !== groupB) return groupA - groupB;
+    const statusOrder = { sakit: 0, izin: 1, hadir: 2 };
+    const statusDiff = (statusOrder[a.status] ?? 9) - (statusOrder[b.status] ?? 9);
+    if (statusDiff !== 0) return statusDiff;
+    return new Date(a.submitted_at) - new Date(b.submitted_at);
+  }).map((item, index) => ({
+    ...item,
+    rank: index + 1,
+    presentRank: item.status === "hadir" ? ++presentRank : null,
+  }));
+}
+
+function updateLeaderboardHeader() {
+  const title = document.querySelector(".lb-header h2, #full-leaderboard-title");
+  const subtitle = document.querySelector(".lb-header p, .leaderboard-hero > p");
+  if (title) title.textContent = "Rekap Kehadiran Hari Ini";
+  if (subtitle) subtitle.textContent = "Tidak masuk tampil lebih dulu, lalu siswa hadir berdasarkan jam absen.";
+}
+
+function setLeaderboardTableHead() {
+  const headers = document.querySelectorAll(".rankings-table th");
+  ["No Absen", "Nama + Jam", "Alasan", "Kategori"].forEach((label, index) => {
+    if (headers[index]) headers[index].textContent = label;
+  });
+}
+
+function mobilePodiumItem(item, place) {
+  const placeClass = { 1: "podium-first", 2: "podium-second", 3: "podium-third" }[place];
+  const star = place === 1 ? '<div class="podium-star"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 4 1.5 4.2H18l-3.5 2.7 1.3 4.3L12 12.7l-3.8 2.5 1.3-4.3L6 8.2h4.5L12 4Z" /></svg></div>' : "";
+  return `<article class="podium-card ${placeClass}">${star}<img src="https://i.pravatar.cc/100?u=${encodeURIComponent(item.nis || item.name)}" alt="${escapeHtml(item.name)}"><span>${place}</span><h3>${escapeHtml(shortName(item.name))}</h3><p>${item.time_label || formatTime(item.submitted_at)}</p></article>`;
+}
+
+function mobileMonthlyRow(item) {
+  return `<li><span class="monthly-number">${escapeHtml(item.absen_number || "-")}</span><span class="monthly-avatar">${initial(item.name)}</span><div><h3>${escapeHtml(item.name)}</h3><p>${item.time_label || formatTime(item.submitted_at)} WIB - ${escapeHtml(reasonText(item))}</p></div><time>${item.status === "hadir" ? "Hadir" : title(item.status)}</time></li>`;
+}
+
+function reasonText(item) {
+  if (item.status === "hadir") return "Hadir";
+  return item.notes || title(item.status);
+}
+
 function clockIcon() {
   return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>';
 }
@@ -231,12 +459,44 @@ function clockIcon() {
 function startClock() {
   const clock = document.querySelector(".current-time h2");
   if (!clock) return;
+  let demoBase = null;
+  let realBase = null;
+
+  sihadirFetch("/dev/time.php")
+    .then((data) => {
+      if (data.datetime) setDemoClock(data.datetime);
+      tick();
+    })
+    .catch(() => {});
+
+  window.addEventListener("sihadir:dev-time", (event) => {
+    setDemoClock(event.detail?.datetime || null);
+    tick();
+  });
+
   const tick = () => {
-    const now = new Date();
-    clock.textContent = now.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", hour12: false }).replace(".", ":");
+    const now = demoBase && realBase ? new Date(demoBase.getTime() + (Date.now() - realBase.getTime())) : new Date();
+    clock.innerHTML = formatClockWithSeconds(now);
   };
+
+  function setDemoClock(datetime) {
+    if (!datetime) {
+      demoBase = null;
+      realBase = null;
+      return;
+    }
+
+    demoBase = new Date(datetime.replace(" ", "T"));
+    realBase = new Date();
+  }
+
   tick();
   setInterval(tick, 1000);
+}
+
+function formatClockWithSeconds(value) {
+  const parts = value.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false }).replace(/\./g, ":").split(":");
+  return `${parts[0]}:${parts[1]}<span class="time-seconds">${parts[2]}</span>`;
 }
 
 function historyTitle(item) {
@@ -276,5 +536,7 @@ function escapeHtml(value) {
 function isMobile() {
   return location.pathname.includes("frondend_mobile_absen");
 }
+
+
 
 
